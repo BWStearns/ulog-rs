@@ -1,7 +1,7 @@
-use core::error;
-use std::io::{self, Read};
-use std::collections::HashMap;
 use byteorder::{LittleEndian, ReadBytesExt};
+use core::error;
+use std::collections::HashMap;
+use std::io::{self, Read};
 use thiserror::Error;
 
 /// Maximum reasonable message size (64KB should be plenty)
@@ -71,7 +71,7 @@ pub enum InfoValue {
     FloatArray(Vec<f32>),
     DoubleArray(Vec<f64>),
     BoolArray(Vec<bool>),
-    CharArray(String),  // Special case: char arrays are strings
+    CharArray(String), // Special case: char arrays are strings
 }
 
 // File header (16 bytes)
@@ -112,12 +112,12 @@ pub struct FormatMessage {
 }
 
 // Information message
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct InfoMessage {
-    pub key: String,           // The name part of the key (e.g., "ver_hw")
-    pub value_type: InfoValueType,  // The type part (e.g., "char[10]")
-    pub array_size: Option<usize>,  // Size if it's an array type
-    pub value: InfoValue,      // The actual value
+    pub key: String,               // The name part of the key (e.g., "ver_hw")
+    pub value_type: InfoValueType, // The type part (e.g., "char[10]")
+    pub array_size: Option<usize>, // Size if it's an array type
+    pub value: InfoValue,          // The actual value
 }
 
 // Parameter message
@@ -204,7 +204,7 @@ impl<R: Read> ULogParser<R> {
 
         self.reader.read_exact(&mut compat_flags)?;
         self.reader.read_exact(&mut incompat_flags)?;
-        
+
         for offset in &mut appended_offsets {
             *offset = self.reader.read_u64::<LittleEndian>()?;
         }
@@ -224,12 +224,15 @@ impl<R: Read> ULogParser<R> {
     fn parse_type_string(type_str: &str) -> Result<(InfoValueType, Option<usize>), ULogError> {
         let mut parts = type_str.split('[');
         let base_type = parts.next().unwrap_or("");
-        
+
         let array_size = if let Some(size_str) = parts.next() {
             // Remove the trailing ']' and parse the size
-            Some(size_str.trim_end_matches(']').parse::<usize>().map_err(|_| {
-                ULogError::ParseError("Invalid array size".to_string())
-            })?)
+            Some(
+                size_str
+                    .trim_end_matches(']')
+                    .parse::<usize>()
+                    .map_err(|_| ULogError::ParseError("Invalid array size".to_string()))?,
+            )
         } else {
             None
         };
@@ -254,37 +257,58 @@ impl<R: Read> ULogParser<R> {
     }
 
     // Read a value of a given type from the reader
-    fn read_typed_value(&mut self, value_type: &InfoValueType, array_size: Option<usize>) 
-        -> Result<InfoValue, ULogError> {
+    fn read_typed_value(
+        &mut self,
+        value_type: &InfoValueType,
+        array_size: Option<usize>,
+    ) -> Result<InfoValue, ULogError> {
         match (value_type, array_size) {
             // Single values
             (InfoValueType::Int8, None) => Ok(InfoValue::Int8(self.reader.read_i8()?)),
             (InfoValueType::UInt8, None) => Ok(InfoValue::UInt8(self.reader.read_u8()?)),
-            (InfoValueType::Int16, None) => Ok(InfoValue::Int16(self.reader.read_i16::<LittleEndian>()?)),
-            (InfoValueType::UInt16, None) => Ok(InfoValue::UInt16(self.reader.read_u16::<LittleEndian>()?)),
-            (InfoValueType::Int32, None) => Ok(InfoValue::Int32(self.reader.read_i32::<LittleEndian>()?)),
-            (InfoValueType::UInt32, None) => Ok(InfoValue::UInt32(self.reader.read_u32::<LittleEndian>()?)),
-            (InfoValueType::Int64, None) => Ok(InfoValue::Int64(self.reader.read_i64::<LittleEndian>()?)),
-            (InfoValueType::UInt64, None) => Ok(InfoValue::UInt64(self.reader.read_u64::<LittleEndian>()?)),
-            (InfoValueType::Float, None) => Ok(InfoValue::Float(self.reader.read_f32::<LittleEndian>()?)),
-            (InfoValueType::Double, None) => Ok(InfoValue::Double(self.reader.read_f64::<LittleEndian>()?)),
+            (InfoValueType::Int16, None) => {
+                Ok(InfoValue::Int16(self.reader.read_i16::<LittleEndian>()?))
+            }
+            (InfoValueType::UInt16, None) => {
+                Ok(InfoValue::UInt16(self.reader.read_u16::<LittleEndian>()?))
+            }
+            (InfoValueType::Int32, None) => {
+                Ok(InfoValue::Int32(self.reader.read_i32::<LittleEndian>()?))
+            }
+            (InfoValueType::UInt32, None) => {
+                Ok(InfoValue::UInt32(self.reader.read_u32::<LittleEndian>()?))
+            }
+            (InfoValueType::Int64, None) => {
+                Ok(InfoValue::Int64(self.reader.read_i64::<LittleEndian>()?))
+            }
+            (InfoValueType::UInt64, None) => {
+                Ok(InfoValue::UInt64(self.reader.read_u64::<LittleEndian>()?))
+            }
+            (InfoValueType::Float, None) => {
+                Ok(InfoValue::Float(self.reader.read_f32::<LittleEndian>()?))
+            }
+            (InfoValueType::Double, None) => {
+                Ok(InfoValue::Double(self.reader.read_f64::<LittleEndian>()?))
+            }
             (InfoValueType::Bool, None) => Ok(InfoValue::Bool(self.reader.read_u8()? != 0)),
             (InfoValueType::Char, None) => {
                 let c = self.reader.read_u8()? as char;
                 Ok(InfoValue::Char(c))
-            },
+            }
 
             // Array values
             (InfoValueType::Int8, Some(size)) => {
                 let mut values = vec![0u8; size];
                 self.reader.read_exact(values.as_mut_slice())?;
-                Ok(InfoValue::Int8Array(values.iter().map(|&x| x as i8).collect()))
-            },
+                Ok(InfoValue::Int8Array(
+                    values.iter().map(|&x| x as i8).collect(),
+                ))
+            }
             (InfoValueType::UInt8, Some(size)) => {
                 let mut values = vec![0u8; size];
                 self.reader.read_exact(&mut values)?;
                 Ok(InfoValue::UInt8Array(values))
-            },
+            }
             // Special case for char arrays - treat as strings
             (InfoValueType::Char, Some(size)) => {
                 let mut bytes = vec![0u8; size];
@@ -294,12 +318,13 @@ impl<R: Read> ULogParser<R> {
                     .trim_matches('\0')
                     .to_string();
                 Ok(InfoValue::CharArray(s))
-            },
+            }
             // Add other array types as needed...
-            _ => Err(ULogError::ParseError("Unsupported type/size combination".to_string())),
+            _ => Err(ULogError::ParseError(
+                "Unsupported type/size combination".to_string(),
+            )),
         }
     }
-
 
     fn read_string(&mut self, len: usize) -> Result<String, ULogError> {
         let mut buf = vec![0u8; len];
@@ -309,7 +334,7 @@ impl<R: Read> ULogParser<R> {
 
     pub fn read_format_message(&mut self, msg_size: u16) -> Result<FormatMessage, ULogError> {
         let format_str = self.read_string(msg_size as usize)?;
-        
+
         let parts: Vec<&str> = format_str.split(':').collect();
         if parts.len() != 2 {
             return Err(ULogError::InvalidMessageType(b'F'));
@@ -369,14 +394,16 @@ impl<R: Read> ULogParser<R> {
         loop {
             let header = self.read_message_header()?;
             match header.msg_type {
-                b'I' => {
-                    match self.read_info_message(header.msg_size) {
-                        Ok(info) => {
-                            println!("Info message - {}: {:?}", info.key.clone(), info.value.clone());
-                            self.info_messages.insert(info.key.clone(), info);
-                        },
-                        Err(e) => println!("Error reading info message: {}", e),
+                b'I' => match self.read_info_message(header.msg_size) {
+                    Ok(info) => {
+                        println!(
+                            "Info message - {}: {:?}",
+                            info.key.clone(),
+                            info.value.clone()
+                        );
+                        self.info_messages.insert(info.key.clone(), info);
                     }
+                    Err(e) => println!("Error reading info message: {}", e),
                 },
                 b'F' => {
                     let format = self.read_format_message(header.msg_size)?;
@@ -385,7 +412,10 @@ impl<R: Read> ULogParser<R> {
                 b'A' => {
                     // Process the first subscription message but don't break yet
                     let subscription = self.read_subscription(header.msg_size)?;
-                    println!("Found subscription: {} (msg_id: {})", subscription.message_name, subscription.msg_id);
+                    println!(
+                        "Found subscription: {} (msg_id: {})",
+                        subscription.message_name, subscription.msg_id
+                    );
                     self.subscriptions.insert(subscription.msg_id, subscription);
                     break;
                 }
@@ -402,7 +432,8 @@ impl<R: Read> ULogParser<R> {
 
     /// Check if a byte represents a valid ULog message type
     fn is_valid_message_type(msg_type: u8) -> bool {
-        matches!(msg_type, 
+        matches!(
+            msg_type,
             b'A' | // Add message
             b'R' | // Remove message
             b'D' | // Data message
@@ -413,11 +444,10 @@ impl<R: Read> ULogParser<R> {
             b'L' | // Logged string
             b'C' | // Tagged logged string
             b'S' | // Synchronization 
-            b'O'   // Dropout
+            b'O' // Dropout
         )
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub struct LoggedMessage {
@@ -432,7 +462,7 @@ impl<R: Read> ULogParser<R> {
         let timestamp = self.reader.read_u64::<LittleEndian>()?;
         // message size is total size minus 9 bytes (1 for log_level + 8 for timestamp)
         let message = self.read_string(msg_size as usize - 9)?;
-        
+
         Ok(LoggedMessage {
             log_level,
             timestamp,
@@ -463,15 +493,14 @@ impl<R: Read> ULogParser<R> {
         // Split the key string into type and name
         let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
         if parts.len() != 2 {
-            return Err(ULogError::ParseError("Invalid info message key format".to_string()));
+            return Err(ULogError::ParseError(
+                "Invalid info message key format".to_string(),
+            ));
         }
 
         let (value_type, array_size) = Self::parse_type_string(parts[0])?;
         let key_name = parts[1].to_string();
 
-        // Calculate remaining bytes for value
-        let value_size = msg_size as usize - 1 - key_len;  // -1 for key_len byte
-        
         // Read the value according to its type
         let value = self.read_typed_value(&value_type, array_size)?;
 
@@ -489,7 +518,10 @@ impl<R: Read> ULogParser<R> {
             match self.read_message_header() {
                 Ok(header) => {
                     if !Self::is_valid_message_type(header.msg_type) {
-                        println!("Invalid message type: {} ({})", header.msg_type as char, header.msg_type);
+                        println!(
+                            "Invalid message type: {} ({})",
+                            header.msg_type as char, header.msg_type
+                        );
                         return Ok(());
                     }
                     if header.msg_size > MAX_MESSAGE_SIZE {
@@ -498,50 +530,51 @@ impl<R: Read> ULogParser<R> {
                     }
 
                     match header.msg_type as char {
-                        'I' => {
-                            match self.read_info_message(header.msg_size) {
-                                Ok(info) => {
-                                    println!("Info message - {}: {:?}", info.key.clone(), info.value.clone());
-                                    self.info_messages.insert(info.key.clone(), info);
-                                },
-                                Err(e) => println!("Error reading info message: {}", e),
+                        'I' => match self.read_info_message(header.msg_size) {
+                            Ok(info) => {
+                                println!(
+                                    "Info message: {:?}",
+                                    info.clone()
+                                );
+                                self.info_messages.insert(info.key.clone(), info);
                             }
+                            Err(e) => println!("Error reading info message: {}", e),
                         },
-                        'L' => {
-                            match self.read_logged_message(header.msg_size) {
-                                Ok(log_msg) => {
-                                    println!("[{}][{} μs] {}", 
-                                        Self::log_level_to_string(log_msg.log_level),
-                                        log_msg.timestamp,
-                                        log_msg.message);
-                                    self.logged_messages.push(log_msg);
-                                },
-                                Err(e) => println!("Error reading log message: {}", e),
+                        'L' => match self.read_logged_message(header.msg_size) {
+                            Ok(log_msg) => {
+                                println!(
+                                    "[{}][{} μs] {}",
+                                    Self::log_level_to_string(log_msg.log_level),
+                                    log_msg.timestamp,
+                                    log_msg.message
+                                );
+                                self.logged_messages.push(log_msg);
                             }
+                            Err(e) => println!("Error reading log message: {}", e),
                         },
                         'D' => {
                             // Skip data messages for now
                             let mut buf = vec![0u8; header.msg_size as usize];
                             self.reader.read_exact(&mut buf)?;
                             // println!("Data message ({} bytes)", header.msg_size);
-                        },
+                        }
                         'S' => {
                             let mut buf = vec![0u8; header.msg_size as usize];
                             self.reader.read_exact(&mut buf)?;
                             // println!("Sync message ({} bytes)", header.msg_size);
-                        },
+                        }
                         _ => {
                             let mut buf = vec![0u8; header.msg_size as usize];
                             self.reader.read_exact(&mut buf)?;
-                            // println!("Other message type: {} ({} bytes)", 
+                            // println!("Other message type: {} ({} bytes)",
                             //         header.msg_type as char, header.msg_size);
                         }
                     }
-                },
+                }
                 Err(ULogError::Io(e)) if e.kind() == io::ErrorKind::UnexpectedEof => {
                     println!("Reached end of file while reading header");
                     break;
-                },
+                }
                 Err(e) => return Err(e),
             }
         }
