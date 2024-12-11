@@ -1,3 +1,6 @@
+pub mod info_message;
+
+use info_message::*;
 use byteorder::{LittleEndian, ReadBytesExt};
 use core::error;
 use std::collections::HashMap;
@@ -27,53 +30,6 @@ pub enum ULogError {
     IncompatibleFlags(Vec<u8>),
 }
 
-// Define the possible C types that can appear in info messages
-#[derive(Debug, Clone, PartialEq)]
-pub enum InfoValueType {
-    Int8,
-    UInt8,
-    Int16,
-    UInt16,
-    Int32,
-    UInt32,
-    Int64,
-    UInt64,
-    Float,
-    Double,
-    Bool,
-    Char,
-}
-
-// The actual value stored in an info message
-#[derive(Debug, Clone)]
-pub enum InfoValue {
-    Int8(i8),
-    UInt8(u8),
-    Int16(i16),
-    UInt16(u16),
-    Int32(i32),
-    UInt32(u32),
-    Int64(i64),
-    UInt64(u64),
-    Float(f32),
-    Double(f64),
-    Bool(bool),
-    Char(char),
-    // Array variants
-    Int8Array(Vec<i8>),
-    UInt8Array(Vec<u8>),
-    Int16Array(Vec<i16>),
-    UInt16Array(Vec<u16>),
-    Int32Array(Vec<i32>),
-    UInt32Array(Vec<u32>),
-    Int64Array(Vec<i64>),
-    UInt64Array(Vec<u64>),
-    FloatArray(Vec<f32>),
-    DoubleArray(Vec<f64>),
-    BoolArray(Vec<bool>),
-    CharArray(String), // Special case: char arrays are strings
-}
-
 // File header (16 bytes)
 #[derive(Debug)]
 pub struct ULogHeader {
@@ -94,30 +50,6 @@ pub struct FlagBitsMessage {
     pub compat_flags: [u8; 8],
     pub incompat_flags: [u8; 8],
     pub appended_offsets: [u64; 3],
-}
-
-// Format message field
-#[derive(Debug, Clone)]
-pub struct Field {
-    pub field_type: String,
-    pub field_name: String,
-    pub array_size: Option<usize>,
-}
-
-// Format message
-#[derive(Debug, Clone)]
-pub struct FormatMessage {
-    pub name: String,
-    pub fields: Vec<Field>,
-}
-
-// Information message
-#[derive(Debug, Clone)]
-pub struct InfoMessage {
-    pub key: String,               // The name part of the key (e.g., "ver_hw")
-    pub value_type: InfoValueType, // The type part (e.g., "char[10]")
-    pub array_size: Option<usize>, // Size if it's an array type
-    pub value: InfoValue,          // The actual value
 }
 
 // Parameter message
