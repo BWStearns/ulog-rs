@@ -1,5 +1,11 @@
+use std::io::Read;
+
+use bytes::buf::Reader;
+
+use crate::ULogError;
+
 // Format message field
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Field {
     pub field_type: String,
     pub field_name: String,
@@ -12,6 +18,15 @@ pub struct FormatMessage {
     pub name: String,
     pub fields: Vec<Field>,
 }
+
+// impl FormatMessage {
+//     pub fn new_from_data_message(
+//         &self,
+//         reader: Reader
+//     ) -> Result<Vec<FormatMessage>, ULogError> {
+//         let mut messages = Vec::new();
+
+// }
 
 // Information message
 #[derive(Debug, Clone)]
