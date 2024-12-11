@@ -24,6 +24,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Parse definition section
     println!("\nParsing definitions section...");
     parser.parse_definitions()?;
+    // Join the initial params into a single string
+    let init_params_str = parser.initial_params().iter().map(|(_, param)| format!("{}: {:?}", param.key, param.value)).collect::<Vec<_>>().join(", ");
+    println!("Initial parameters: {}", init_params_str);
     
     // Print format definitions
     println!("\nFormat definitions found:");

@@ -1,5 +1,3 @@
-
-
 // Format message field
 #[derive(Debug, Clone)]
 pub struct Field {
@@ -19,14 +17,14 @@ pub struct FormatMessage {
 #[derive(Debug, Clone)]
 pub struct InfoMessage {
     pub key: String,               // The name part of the key (e.g., "ver_hw")
-    pub value_type: InfoValueType, // The type part (e.g., "char[10]")
+    pub value_type: ULogValueType, // The type part (e.g., "char[10]")
     pub array_size: Option<usize>, // Size if it's an array type
-    pub value: InfoValue,          // The actual value
+    pub value: ULogValue,          // The actual value
 }
 
 impl InfoMessage {
     pub fn as_string(&self) -> Option<&str> {
-        if let InfoValue::CharArray(s) = &self.value {
+        if let ULogValue::CharArray(s) = &self.value {
             Some(s)
         } else {
             None
@@ -34,7 +32,7 @@ impl InfoMessage {
     }
 
     pub fn as_u32(&self) -> Option<u32> {
-        if let InfoValue::UInt32(v) = self.value {
+        if let ULogValue::UInt32(v) = self.value {
             Some(v)
         } else {
             None
@@ -42,7 +40,7 @@ impl InfoMessage {
     }
 
     pub fn as_u64(&self) -> Option<u64> {
-        if let InfoValue::UInt64(v) = self.value {
+        if let ULogValue::UInt64(v) = self.value {
             Some(v)
         } else {
             None
@@ -50,7 +48,7 @@ impl InfoMessage {
     }
 
     pub fn as_i32(&self) -> Option<i32> {
-        if let InfoValue::Int32(v) = self.value {
+        if let ULogValue::Int32(v) = self.value {
             Some(v)
         } else {
             None
@@ -58,7 +56,7 @@ impl InfoMessage {
     }
 
     pub fn as_f32(&self) -> Option<f32> {
-        if let InfoValue::Float(v) = self.value {
+        if let ULogValue::Float(v) = self.value {
             Some(v)
         } else {
             None
@@ -66,7 +64,7 @@ impl InfoMessage {
     }
 
     pub fn as_f64(&self) -> Option<f64> {
-        if let InfoValue::Double(v) = self.value {
+        if let ULogValue::Double(v) = self.value {
             Some(v)
         } else {
             None
@@ -74,7 +72,7 @@ impl InfoMessage {
     }
 
     pub fn as_bool(&self) -> Option<bool> {
-        if let InfoValue::Bool(v) = self.value {
+        if let ULogValue::Bool(v) = self.value {
             Some(v)
         } else {
             None
@@ -87,7 +85,7 @@ impl InfoMessage {
     }
 
     pub fn as_u32_array(&self) -> Option<&[u32]> {
-        if let InfoValue::UInt32Array(v) = &self.value {
+        if let ULogValue::UInt32Array(v) = &self.value {
             Some(v)
         } else {
             None
@@ -95,7 +93,7 @@ impl InfoMessage {
     }
 
     pub fn as_f32_array(&self) -> Option<&[f32]> {
-        if let InfoValue::FloatArray(v) = &self.value {
+        if let ULogValue::FloatArray(v) = &self.value {
             Some(v)
         } else {
             None
@@ -103,7 +101,7 @@ impl InfoMessage {
     }
 
     // Method to get type information
-    pub fn value_type(&self) -> &InfoValueType {
+    pub fn value_type(&self) -> &ULogValueType {
         &self.value_type
     }
 
@@ -113,14 +111,14 @@ impl InfoMessage {
     }
 
     // Generic method to get raw value
-    pub fn raw_value(&self) -> &InfoValue {
+    pub fn raw_value(&self) -> &ULogValue {
         &self.value
     }
 }
 
 // Define the possible C types that can appear in info messages
 #[derive(Debug, Clone, PartialEq)]
-pub enum InfoValueType {
+pub enum ULogValueType {
     Int8,
     UInt8,
     Int16,
@@ -137,7 +135,7 @@ pub enum InfoValueType {
 
 // The actual value stored in an info message
 #[derive(Debug, Clone)]
-pub enum InfoValue {
+pub enum ULogValue {
     Int8(i8),
     UInt8(u8),
     Int16(i16),
