@@ -1,0 +1,19 @@
+[package]
+name = "ulog-parser"
+version = "0.1.0"
+edition = "2021"
+authors = ["Brian Stearns <brianw.stearns@gmail.com>"]
+description = "A parser for the PX4 ULog file format"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+byteorder = "1.4"      # For reading binary data in little-endian format
+thiserror = "1.0"      # For error handling
+bytes = "1.4"          # For working with bytes
+log = "0.4"            # For logging support (optional)
+
+[dependencies.dirs]
+version = "5.0"        # For finding home directory
+
+[dev-dependencies]
+tempfile = "3.5"       # For tests that need temporary files
