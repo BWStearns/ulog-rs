@@ -175,5 +175,7 @@ pub enum ULogValue {
     FloatArray(Vec<f32>),
     DoubleArray(Vec<f64>),
     BoolArray(Vec<bool>),
-    CharArray(String), // Special case: char arrays are strings
+    CharArray(String),                 // Special case: char arrays are strings
+    Message(Vec<ULogValue>),           // For nested message types
+    MessageArray(Vec<Vec<ULogValue>>), // For arrays of nested message types
 }

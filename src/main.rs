@@ -73,35 +73,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     for (sub_id, subscription) in parser.subscriptions() {
-        println!("\nSubscription: {}, {}, {}, {}", sub_id, subscription.message_name, subscription.multi_id, subscription.data.len());
+        println!(
+            "\nSubscription: {}, {}, {}, {}",
+            sub_id,
+            subscription.message_name,
+            subscription.multi_id,
+            subscription.data.len()
+        );
     }
 
-    // Print summary of data messages
-    println!("\nSummary of data messages:");
-    // let data_messages = parser.data_messages();
-    // println!("Found {} data messages", data_messages.len());
+    // Print summary of subscriptions
+    println!("\nSummary of subscriptions:");
+    let subscriptions = parser.subscriptions();
+    println!("Found {} subscriptions", subscriptions.len());
+    for (sub_id, subscription) in subscriptions {
+        println!(
+            "Subscription ID: {}, Message Name: {}, Multi ID: {}, Data Length: {}",
+            sub_id,
+            subscription.message_name,
+            subscription.multi_id,
+            subscription.data.len()
+        );
+    }
 
-    // Count messages by type
-    // let mut type_counts = HashMap::new();
-    // for msg in data_messages {
-    //     *type_counts.entry(&msg.message_name).or_insert(0) += 1;
-    // }
+    println!("\nSpecific Messages:");
+    let specific_subscription = parser
+        .subscriptions()
+        .iter()
+        .find(|(_, sub)| sub.message_name == "telemetry_status")
+        .expect("Could not find telemetry_status subscription")
+        .1;
+    for message in specific_subscription.data.iter() {
+        println!("{:?}", message);
+    }
 
-    // println!("\nMessage types:");
-    // for (msg_type, count) in type_counts.iter() {
-    //     println!("{}: {} messages", msg_type, count);
-    // }
-
-    // // Print time range if we have timestamps
-    // if let (Some(first), Some(last)) = (
-    //     data_messages.first().map(|m| m.timestamp),
-    //     data_messages.last().map(|m| m.timestamp)
-    // ) {
-    //     println!("\nTime range:");
-    //     println!("Start: {} μs", first);
-    //     println!("End: {} μs", last);
-    //     println!("Duration: {} s", (last - first) as f64 / 1_000_000.0);
-    // }
+    println!("{:?}", specific_subscription);
 
     Ok(())
 }
