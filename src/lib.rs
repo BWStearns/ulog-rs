@@ -78,35 +78,35 @@ pub struct ParameterMessage {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DefaultType {
-    SystemWide = 1,      // 1<<0: system wide default
-    Configuration = 2,   // 1<<1: default for current configuration
+    SystemWide = 1,    // 1<<0: system wide default
+    Configuration = 2, // 1<<1: default for current configuration
 }
 
 #[derive(Debug, Clone)]
 pub struct DefaultParameterMessage {
     pub key: String,
     pub value: ULogValue,
-    pub default_types: Vec<DefaultType>,  // A parameter can have multiple default types
+    pub default_types: Vec<DefaultType>, // A parameter can have multiple default types
 }
 
 impl DefaultParameterMessage {
     // Helper method to parse default types from a bitfield
     fn parse_default_types(bitfield: u8) -> Vec<DefaultType> {
         let mut types = Vec::new();
-        
+
         if bitfield & (1 << 0) != 0 {
             types.push(DefaultType::SystemWide);
         }
         if bitfield & (1 << 1) != 0 {
             types.push(DefaultType::Configuration);
         }
-        
+
         // Verify at least one bit is set as per spec
         if types.is_empty() {
             // Default to system-wide if none specified (though this shouldn't happen)
             types.push(DefaultType::SystemWide);
         }
-        
+
         types
     }
 }
@@ -124,6 +124,8 @@ pub struct SubscriptionMessage {
 #[derive(Debug)]
 pub struct ULogParser<R: Read> {
     reader: R,
+    _current_timestamp: u64,
+    dropout_details: DropoutStats,
     header: ULogHeader,
     formats: HashMap<String, FormatMessage>,
     subscriptions: HashMap<u16, SubscriptionMessage>,
@@ -132,11 +134,26 @@ pub struct ULogParser<R: Read> {
     initial_params: HashMap<String, ParameterMessage>,
     multi_messages: HashMap<String, Vec<MultiMessage>>,
     default_params: HashMap<String, DefaultParameterMessage>,
+    changed_params: HashMap<String, Vec<ParameterMessage>>,
 }
 
 struct NestedMessageResult {
     data: Vec<ULogValue>,
     bytes_read: usize,
+}
+
+#[derive(Debug, Clone)]
+pub struct DropoutMessage {
+    pub timestamp: u64,
+    pub duration: u16, // Duration of dropout in milliseconds
+}
+
+// Collection of dropouts that occurred during logging
+#[derive(Debug, Clone)]
+pub struct DropoutStats {
+    pub total_drops: usize,
+    pub total_duration_ms: u32,
+    pub dropouts: Vec<DropoutMessage>,
 }
 
 impl<R: Read> ULogParser<R> {
@@ -161,6 +178,12 @@ impl<R: Read> ULogParser<R> {
 
         Ok(ULogParser {
             reader,
+            _current_timestamp: timestamp,
+            dropout_details: DropoutStats {
+                total_drops: 0,
+                total_duration_ms: 0,
+                dropouts: Vec::new(),
+            },
             header,
             formats: HashMap::new(),
             subscriptions: HashMap::new(),
@@ -169,6 +192,7 @@ impl<R: Read> ULogParser<R> {
             initial_params: HashMap::new(),
             multi_messages: HashMap::new(),
             default_params: HashMap::new(),
+            changed_params: HashMap::new(),
         })
     }
 
@@ -198,6 +222,14 @@ impl<R: Read> ULogParser<R> {
 
     pub fn multi_messages(&self) -> &HashMap<String, Vec<MultiMessage>> {
         &self.multi_messages
+    }
+
+    pub fn info_messages(&self) -> &HashMap<String, InfoMessage> {
+        &self.info_messages
+    }
+
+    pub fn dropout_details(&self) -> &DropoutStats {
+        &self.dropout_details
     }
 
     fn dump_next_bytes(&mut self, count: usize) -> Result<(), ULogError> {
@@ -470,6 +502,7 @@ impl<R: Read> ULogParser<R> {
         let timestamp = self.reader.read_u64::<LittleEndian>()?;
         // message size is total size minus 9 bytes (1 for log_level + 8 for timestamp)
         let message = self.read_string(msg_size as usize - 9)?;
+        self._current_timestamp = timestamp;
 
         Ok(LoggedMessage {
             log_level,
@@ -545,8 +578,10 @@ impl<R: Read> ULogParser<R> {
                         existing_msgs.push(multi_msg);
                     } else {
                         // This is an error case - got a continuation without a start
-                        println!("Warning: Got continuation message without initial message for key: {}", 
-                                multi_msg.clone().key);
+                        println!(
+                            "Warning: Got continuation message without initial message for key: {}",
+                            multi_msg.clone().key
+                        );
                         let mut msgs = Vec::new();
                         msgs.push(multi_msg.clone());
                         self.multi_messages.insert(multi_msg.key.clone(), msgs);
@@ -566,19 +601,20 @@ impl<R: Read> ULogParser<R> {
         }
     }
 
-
     fn read_multi_message(&mut self, msg_size: u16) -> Result<MultiMessage, ULogError> {
         // Read is_continued flag
         let is_continued = self.reader.read_u8()? != 0;
-        
+
         // Read key length and key
         let key_len = self.reader.read_u8()? as usize;
         let key_str = self.read_string(key_len)?;
-        
+
         // Split the key string into type and name
         let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
         if parts.len() != 2 {
-            return Err(ULogError::ParseError("Invalid multi message key format".to_string()));
+            return Err(ULogError::ParseError(
+                "Invalid multi message key format".to_string(),
+            ));
         }
 
         let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
@@ -617,10 +653,9 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-
     // Similarly, modify read_param_message:
     fn read_param_message(&mut self, msg_size: u16) -> Result<ParameterMessage, ULogError> {
-        let key_len = self.reader.read_u8()? as usize;
+        let key_len: usize = self.reader.read_u8()? as usize;
         let key_str = self.read_string(key_len)?;
         // The key_str is of the format "<type> <name>", like "float foo"
         let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
@@ -661,46 +696,46 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-    fn read_default_parameter(&mut self, msg_size: u16) -> Result<DefaultParameterMessage, ULogError> {
+    fn read_default_parameter(
+        &mut self,
+        msg_size: u16,
+    ) -> Result<DefaultParameterMessage, ULogError> {
         // Read the default types bitfield
         let default_types_byte = self.reader.read_u8()?;
-        
+
         // Read key length and key
         let key_len = self.reader.read_u8()? as usize;
         let key_str = self.read_string(key_len)?;
-        
+
         // Parse the key string (format is same as regular parameters)
         let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
         if parts.len() != 2 {
             return Err(ULogError::ParseError(
-                "Invalid default parameter key format".to_string()
+                "Invalid default parameter key format".to_string(),
             ));
         }
-        
+
         let param_name = parts[1].to_string();
-        
+
         // Parse the type and verify it's either float or int32
         let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
-        
-        // Calculate remaining bytes for value
-        // 2 bytes for default_types and key_len, plus key_len bytes for the key
-        let value_size = msg_size as usize - 2 - key_len;
-        
         let value = match ulog_type {
             ULogType::Basic(value_type) => {
                 // Verify the type is float or int32 as per spec
                 match value_type {
                     ULogValueType::Float | ULogValueType::Int32 => {
                         self.read_typed_value(&value_type, array_size)?
-                    },
-                    _ => return Err(ULogError::ParseError(
-                        "Default parameters must be float or int32".to_string()
-                    ))
+                    }
+                    _ => {
+                        return Err(ULogError::ParseError(
+                            "Default parameters must be float or int32".to_string(),
+                        ))
+                    }
                 }
-            },
+            }
             ULogType::Message(_) => {
                 return Err(ULogError::ParseError(
-                    "Message types not allowed in default parameters".to_string()
+                    "Message types not allowed in default parameters".to_string(),
                 ));
             }
         };
@@ -712,7 +747,11 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-    pub fn get_default_value(&self, param_name: &str, default_type: DefaultType) -> Option<&ULogValue> {
+    pub fn get_default_value(
+        &self,
+        param_name: &str,
+        default_type: DefaultType,
+    ) -> Option<&ULogValue> {
         self.default_params.get(param_name).and_then(|param| {
             if param.default_types.contains(&default_type) {
                 Some(&param.value)
@@ -726,16 +765,65 @@ impl<R: Read> ULogParser<R> {
         match self.read_default_parameter(header.msg_size) {
             Ok(default_param) => {
                 println!(
-                    "Default parameter: {} = {:?} (types: {:?})", 
-                    default_param.key,
-                    default_param.value,
-                    default_param.default_types
+                    "Default parameter: {} = {:?} (types: {:?})",
+                    default_param.key, default_param.value, default_param.default_types
                 );
-                self.default_params.insert(default_param.key.clone(), default_param);
+                self.default_params
+                    .insert(default_param.key.clone(), default_param);
                 Ok(())
             }
             Err(e) => {
                 println!("Error reading default parameter: {}", e);
+                Err(e)
+            }
+        }
+    }
+
+    fn handle_parameter_change(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        match self.read_param_message(header.msg_size) {
+            Ok(param) => {
+                println!("Parameter change: {} = {:?}", param.key, param.value);
+                let parameter_changes = self
+                    .changed_params
+                    .entry(param.key.clone())
+                    .or_insert(Vec::new());
+                parameter_changes.push(param);
+                Ok(())
+            }
+            Err(e) => {
+                println!("Error reading parameter change: {}", e);
+                Err(e)
+            }
+        }
+    }
+
+    fn read_dropout_message(&mut self, msg_size: u16) -> Result<DropoutMessage, ULogError> {
+        if msg_size != 2 {
+            return Err(ULogError::ParseError(format!(
+                "Invalid dropout message size: {}",
+                msg_size
+            )));
+        }
+
+        let duration = self.reader.read_u16::<LittleEndian>()?;
+
+        Ok(DropoutMessage {
+            duration,
+            timestamp: self._current_timestamp,
+        })
+    }
+
+    fn handle_dropout(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        match self.read_dropout_message(header.msg_size) {
+            Ok(dropout) => {
+                println!("Dropout: {:?}", dropout);
+                self.dropout_details.total_drops += 1;
+                self.dropout_details.total_duration_ms += dropout.duration as u32;
+                self.dropout_details.dropouts.push(dropout);
+                Ok(())
+            }
+            Err(e) => {
+                println!("Error reading dropout: {}", e);
                 Err(e)
             }
         }
@@ -890,7 +978,7 @@ impl<R: Read> ULogParser<R> {
         msg_size: u16,
         format: &FormatMessage,
     ) -> Result<DataMessage, ULogError> {
-        let mut data = Vec::new();
+        let mut data: Vec<ULogValue> = Vec::new();
         let mut bytes_read = 2; // Account for msg_id that was already read
 
         let has_trailing_padding = format
@@ -997,14 +1085,18 @@ impl<R: Read> ULogParser<R> {
                 bytes_read, msg_size, format.name
             )));
         }
-
+        let timestamp = if let Some(ULogValue::UInt64(ts)) = data.first() {
+            *ts
+        } else {
+            0
+        };
+        // Don't update the timestamp if it wasn't set in the message
+        if timestamp > 0 {
+            self._current_timestamp = timestamp
+        }
         Ok(DataMessage {
             msg_id,
-            time_us: if let Some(ULogValue::UInt64(ts)) = data.first() {
-                *ts
-            } else {
-                0
-            },
+            time_us: timestamp,
             data,
         })
     }
@@ -1075,11 +1167,18 @@ impl<R: Read> ULogParser<R> {
                                 })?
                                 .clone();
                             let data = self.read_data_message(msg_id, header.msg_size, &format)?;
+
                             self.subscriptions
                                 .get_mut(&msg_id)
                                 .unwrap()
                                 .data
                                 .push(data.data);
+                        }
+                        b'O' => {
+                            self.handle_dropout(&header)?;
+                        }
+                        b'P' => {
+                            self.handle_parameter_change(&header)?;
                         }
                         b'R' => {
                             // Skip unsubscription messages for now since they're unused

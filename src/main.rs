@@ -86,6 +86,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
 
+    // Print out the dropout details
+    println!("\nDropout details:");
+    println!("{:?}", parser.dropout_details());
+
     // Print out the default params
     // println!("\nDefault Parameters:");
     // for (key, value) in parser.default_params() {
