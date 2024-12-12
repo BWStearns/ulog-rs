@@ -571,6 +571,7 @@ impl<R: Read> ULogParser<R> {
                 continue;
             }
     
+            println!("Reading field: {}, {}", field.field_name, field.field_type);
             // Parse the field type
             let (value_type, array_size) = Self::parse_type_string(&field.field_type)?;
             
