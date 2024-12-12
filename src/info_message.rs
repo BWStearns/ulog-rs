@@ -1,9 +1,3 @@
-use std::io::Read;
-
-use bytes::buf::Reader;
-
-use crate::ULogError;
-
 // Format message field
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Field {
