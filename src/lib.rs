@@ -1,9 +1,11 @@
 pub mod info_message;
+pub mod tagged_logged_message;
 
 use byteorder::{LittleEndian, ReadBytesExt};
 use info_message::*;
 use std::collections::HashMap;
 use std::io::{self, Read};
+use tagged_logged_message::*;
 use thiserror::Error;
 
 /// Maximum reasonable message size (64KB should be plenty)
@@ -130,6 +132,7 @@ pub struct ULogParser<R: Read> {
     formats: HashMap<String, FormatMessage>,
     subscriptions: HashMap<u16, SubscriptionMessage>,
     logged_messages: Vec<LoggedMessage>,
+    logged_messages_tagged: HashMap<u16, Vec<TaggedLoggedMessage>>,
     info_messages: HashMap<String, InfoMessage>,
     initial_params: HashMap<String, ParameterMessage>,
     multi_messages: HashMap<String, Vec<MultiMessage>>,
@@ -188,6 +191,7 @@ impl<R: Read> ULogParser<R> {
             formats: HashMap::new(),
             subscriptions: HashMap::new(),
             logged_messages: Vec::new(),
+            logged_messages_tagged: HashMap::new(),
             info_messages: HashMap::new(),
             initial_params: HashMap::new(),
             multi_messages: HashMap::new(),
@@ -1125,6 +1129,9 @@ impl<R: Read> ULogParser<R> {
                             }
                             Err(e) => println!("Error reading log message: {}", e),
                         },
+                        b'C' => {
+                            self.read_tagged_logged_message(header.msg_size)?;
+                        }
                         b'D' => {
                             let msg_id = self.reader.read_u16::<LittleEndian>()?;
                             let format_name = self
