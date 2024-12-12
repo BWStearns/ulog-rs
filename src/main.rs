@@ -1,7 +1,7 @@
 use std::fs::File;
 // use std::path::Path;
 
-use ulog_parser::ULogParser;
+use ulog_parser::{info_message::MultiMessageCombiner, ULogParser};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get the file path from the home directory
@@ -85,6 +85,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             subscription.data.len()
         );
     }
+
+    // Print out the default params
+    // println!("\nDefault Parameters:");
+    // for (key, value) in parser.default_params() {
+    //     println!("{:?}: {:?}", key, value);
+    // }
+
+    // Print out the multi messages
+    // println!("\nMulti Messages:");
+    // for (_, multi_msg) in parser.multi_messages() {
+    //     println!("Multi ID: {}", multi_msg[0].key);
+    //     let msg = multi_msg.combine_values().unwrap();
+    //     println!("{:?}", msg);
+    // }
 
     // println!("\nSpecific Messages:");
     // let specific_subscription = parser

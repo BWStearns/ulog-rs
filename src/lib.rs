@@ -63,7 +63,6 @@ pub struct MessageHeader {
     pub msg_type: u8,
 }
 
-// Flag bits message
 #[derive(Debug)]
 pub struct FlagBitsMessage {
     pub compat_flags: [u8; 8],
@@ -71,11 +70,45 @@ pub struct FlagBitsMessage {
     pub appended_offsets: [u64; 3],
 }
 
-// Parameter message
 #[derive(Debug)]
 pub struct ParameterMessage {
     pub key: String,
     pub value: ULogValue,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DefaultType {
+    SystemWide = 1,      // 1<<0: system wide default
+    Configuration = 2,   // 1<<1: default for current configuration
+}
+
+#[derive(Debug, Clone)]
+pub struct DefaultParameterMessage {
+    pub key: String,
+    pub value: ULogValue,
+    pub default_types: Vec<DefaultType>,  // A parameter can have multiple default types
+}
+
+impl DefaultParameterMessage {
+    // Helper method to parse default types from a bitfield
+    fn parse_default_types(bitfield: u8) -> Vec<DefaultType> {
+        let mut types = Vec::new();
+        
+        if bitfield & (1 << 0) != 0 {
+            types.push(DefaultType::SystemWide);
+        }
+        if bitfield & (1 << 1) != 0 {
+            types.push(DefaultType::Configuration);
+        }
+        
+        // Verify at least one bit is set as per spec
+        if types.is_empty() {
+            // Default to system-wide if none specified (though this shouldn't happen)
+            types.push(DefaultType::SystemWide);
+        }
+        
+        types
+    }
 }
 
 // Subscription message
@@ -97,6 +130,8 @@ pub struct ULogParser<R: Read> {
     logged_messages: Vec<LoggedMessage>,
     info_messages: HashMap<String, InfoMessage>,
     initial_params: HashMap<String, ParameterMessage>,
+    multi_messages: HashMap<String, Vec<MultiMessage>>,
+    default_params: HashMap<String, DefaultParameterMessage>,
 }
 
 struct NestedMessageResult {
@@ -132,6 +167,8 @@ impl<R: Read> ULogParser<R> {
             logged_messages: Vec::new(),
             info_messages: HashMap::new(),
             initial_params: HashMap::new(),
+            multi_messages: HashMap::new(),
+            default_params: HashMap::new(),
         })
     }
 
@@ -153,6 +190,14 @@ impl<R: Read> ULogParser<R> {
 
     pub fn initial_params(&self) -> &HashMap<String, ParameterMessage> {
         &self.initial_params
+    }
+
+    pub fn default_params(&self) -> &HashMap<String, DefaultParameterMessage> {
+        &self.default_params
+    }
+
+    pub fn multi_messages(&self) -> &HashMap<String, Vec<MultiMessage>> {
+        &self.multi_messages
     }
 
     fn dump_next_bytes(&mut self, count: usize) -> Result<(), ULogError> {
@@ -491,6 +536,88 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
+    fn handle_multi_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        match self.read_multi_message(header.msg_size) {
+            Ok(multi_msg) => {
+                // If this is a continuation of a previous message
+                if multi_msg.is_continued {
+                    if let Some(existing_msgs) = self.multi_messages.get_mut(&multi_msg.key) {
+                        existing_msgs.push(multi_msg);
+                    } else {
+                        // This is an error case - got a continuation without a start
+                        println!("Warning: Got continuation message without initial message for key: {}", 
+                                multi_msg.clone().key);
+                        let mut msgs = Vec::new();
+                        msgs.push(multi_msg.clone());
+                        self.multi_messages.insert(multi_msg.key.clone(), msgs);
+                    }
+                } else {
+                    // This is a new message or the start of a new series
+                    let mut msgs = Vec::new();
+                    msgs.push(multi_msg.clone());
+                    self.multi_messages.insert(multi_msg.key.clone(), msgs);
+                }
+                Ok(())
+            }
+            Err(e) => {
+                println!("Error reading multi message: {}", e);
+                Err(e)
+            }
+        }
+    }
+
+
+    fn read_multi_message(&mut self, msg_size: u16) -> Result<MultiMessage, ULogError> {
+        // Read is_continued flag
+        let is_continued = self.reader.read_u8()? != 0;
+        
+        // Read key length and key
+        let key_len = self.reader.read_u8()? as usize;
+        let key_str = self.read_string(key_len)?;
+        
+        // Split the key string into type and name
+        let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
+        if parts.len() != 2 {
+            return Err(ULogError::ParseError("Invalid multi message key format".to_string()));
+        }
+
+        let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
+        let key_name = parts[1].to_string();
+
+        // Calculate remaining bytes for value
+        // 2 bytes for is_continued and key_len, plus key_len bytes for the key
+        let value_size = msg_size as usize - 2 - key_len;
+
+        // Handle basic types and message types differently
+        let value = match &ulog_type {
+            ULogType::Basic(value_type) => {
+                // Read the value based on the remaining size
+                let custom_size = Some(value_size);
+                self.read_typed_value(value_type, custom_size)?
+            }
+            ULogType::Message(_) => {
+                return Err(ULogError::ParseError(
+                    "Message types not allowed in multi messages".to_string(),
+                ));
+            }
+        };
+
+        // Extract the value_type for storage
+        let value_type = match ulog_type {
+            ULogType::Basic(vt) => vt,
+            _ => unreachable!(), // We've already handled the Message case above
+        };
+
+        Ok(MultiMessage {
+            is_continued,
+            key: key_name,
+            value_type,
+            array_size: Some(value_size), // Store the actual size we read
+            value,
+        })
+    }
+
+
     // Similarly, modify read_param_message:
     fn read_param_message(&mut self, msg_size: u16) -> Result<ParameterMessage, ULogError> {
         let key_len = self.reader.read_u8()? as usize;
@@ -534,6 +661,86 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
+    fn read_default_parameter(&mut self, msg_size: u16) -> Result<DefaultParameterMessage, ULogError> {
+        // Read the default types bitfield
+        let default_types_byte = self.reader.read_u8()?;
+        
+        // Read key length and key
+        let key_len = self.reader.read_u8()? as usize;
+        let key_str = self.read_string(key_len)?;
+        
+        // Parse the key string (format is same as regular parameters)
+        let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
+        if parts.len() != 2 {
+            return Err(ULogError::ParseError(
+                "Invalid default parameter key format".to_string()
+            ));
+        }
+        
+        let param_name = parts[1].to_string();
+        
+        // Parse the type and verify it's either float or int32
+        let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
+        
+        // Calculate remaining bytes for value
+        // 2 bytes for default_types and key_len, plus key_len bytes for the key
+        let value_size = msg_size as usize - 2 - key_len;
+        
+        let value = match ulog_type {
+            ULogType::Basic(value_type) => {
+                // Verify the type is float or int32 as per spec
+                match value_type {
+                    ULogValueType::Float | ULogValueType::Int32 => {
+                        self.read_typed_value(&value_type, array_size)?
+                    },
+                    _ => return Err(ULogError::ParseError(
+                        "Default parameters must be float or int32".to_string()
+                    ))
+                }
+            },
+            ULogType::Message(_) => {
+                return Err(ULogError::ParseError(
+                    "Message types not allowed in default parameters".to_string()
+                ));
+            }
+        };
+
+        Ok(DefaultParameterMessage {
+            key: param_name,
+            value,
+            default_types: DefaultParameterMessage::parse_default_types(default_types_byte),
+        })
+    }
+
+    pub fn get_default_value(&self, param_name: &str, default_type: DefaultType) -> Option<&ULogValue> {
+        self.default_params.get(param_name).and_then(|param| {
+            if param.default_types.contains(&default_type) {
+                Some(&param.value)
+            } else {
+                None
+            }
+        })
+    }
+
+    fn handle_default_parameter(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        match self.read_default_parameter(header.msg_size) {
+            Ok(default_param) => {
+                println!(
+                    "Default parameter: {} = {:?} (types: {:?})", 
+                    default_param.key,
+                    default_param.value,
+                    default_param.default_types
+                );
+                self.default_params.insert(default_param.key.clone(), default_param);
+                Ok(())
+            }
+            Err(e) => {
+                println!("Error reading default parameter: {}", e);
+                Err(e)
+            }
+        }
+    }
+
     pub fn parse_definitions(&mut self) -> Result<(), ULogError> {
         // Read flag bits message first
         let header = self.read_message_header()?;
@@ -571,20 +778,12 @@ impl<R: Read> ULogParser<R> {
                     self.initial_params.insert(param.key.clone(), param);
                 }
                 // Multis are gonna be a pain, skipping for now
-                // b'M' => {
-                //     // let message = self.read_message(header.msg_size)?;
-                //     // self.messages.insert(message.id, message);
-                // }
-                // Also a pain, skipping for now
-                // b'Q' => {
-                //     let param = self.read_param_default_message(header.msg_size)?;
-                //     // println!(
-                //     //     "Parameter default message - {}: {:?}",
-                //     //     param.key.clone(),
-                //     //     param.value.clone()
-                //     // );
-                //     self.default_params.insert(param.key.clone(), param);
-                // }
+                b'M' => {
+                    self.handle_multi_message(&header)?;
+                }
+                b'Q' => {
+                    self.handle_default_parameter(&header)?;
+                }
                 b'A' => {
                     // This is the first message in the data section
                     // Process the first subscription message but don't break yet

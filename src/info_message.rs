@@ -6,29 +6,72 @@ pub struct Field {
     pub array_size: Option<usize>,
 }
 
-// Format message
 #[derive(Debug, Clone)]
 pub struct FormatMessage {
     pub name: String,
     pub fields: Vec<Field>,
 }
 
-// impl FormatMessage {
-//     pub fn new_from_data_message(
-//         &self,
-//         reader: Reader
-//     ) -> Result<Vec<FormatMessage>, ULogError> {
-//         let mut messages = Vec::new();
-
-// }
-
-// Information message
 #[derive(Debug, Clone)]
 pub struct InfoMessage {
     pub key: String,               // The name part of the key (e.g., "ver_hw")
     pub value_type: ULogValueType, // The type part (e.g., "char[10]")
     pub array_size: Option<usize>, // Size if it's an array type
     pub value: ULogValue,          // The actual value
+}
+
+#[derive(Debug, Clone)]
+pub struct MultiMessage {
+    pub is_continued: bool,
+    pub key: String,
+    pub value_type: ULogValueType,
+    pub array_size: Option<usize>,
+    pub value: ULogValue,
+}
+
+pub trait MultiMessageCombiner {
+    fn combine_values(&self) -> Option<ULogValue>;
+}
+
+impl MultiMessageCombiner for Vec<MultiMessage> {
+    fn combine_values(&self) -> Option<ULogValue> {
+        if self.is_empty() {
+            return None;
+        }
+
+        // All messages should have the same type, so use the first one's type
+        let first = &self[0];
+        match &first.value {
+            ULogValue::CharArray(_) => {
+                // Combine string values
+                let combined: String = self.iter()
+                    .filter_map(|msg| {
+                        if let ULogValue::CharArray(s) = &msg.value {
+                            Some(s.as_str())
+                        } else {
+                            None
+                        }
+                    })
+                    .collect();
+                Some(ULogValue::CharArray(combined))
+            }
+            ULogValue::UInt8Array(_arr) => {
+                // Combine byte arrays
+                let mut combined = Vec::new();
+                for msg in self {
+                    if let ULogValue::UInt8Array(arr) = &msg.value {
+                        combined.extend_from_slice(arr);
+                    }
+                }
+                Some(ULogValue::UInt8Array(combined))
+            }
+            // Add other array types as needed...
+            _ => {
+                println!("Unsupported multi message value type");
+                None
+            }
+        }
+    }
 }
 
 impl InfoMessage {
