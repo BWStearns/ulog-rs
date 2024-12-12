@@ -232,7 +232,7 @@ impl<R: Read> ULogParser<R> {
         &self.dropout_details
     }
 
-    fn dump_next_bytes(&mut self, count: usize) -> Result<(), ULogError> {
+    fn _dump_next_bytes(&mut self, count: usize) -> Result<(), ULogError> {
         let mut buf = vec![0u8; count];
         self.reader.read_exact(&mut buf)?;
         println!("Next {} bytes: {:?}", count, buf);
@@ -369,7 +369,6 @@ impl<R: Read> ULogParser<R> {
                     .to_string();
                 Ok(ULogValue::CharArray(s))
             }
-            // Add other array types as needed...
             _ => {
                 println!(
                     "Invalid type/size combination: {:?}, {:?}",
@@ -526,7 +525,7 @@ impl<R: Read> ULogParser<R> {
     }
 
     // In read_info_message, modify the value reading section:
-    fn read_info_message(&mut self, msg_size: u16) -> Result<InfoMessage, ULogError> {
+    fn read_info_message(&mut self) -> Result<InfoMessage, ULogError> {
         let key_len = self.reader.read_u8()? as usize;
         let key_str = self.read_string(key_len)?;
 
@@ -616,7 +615,7 @@ impl<R: Read> ULogParser<R> {
             ));
         }
 
-        let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
+        let (ulog_type, _array_size) = Self::parse_type_string(parts[0])?;
         let key_name = parts[1].to_string();
 
         // Calculate remaining bytes for value
@@ -652,8 +651,7 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-    // Similarly, modify read_param_message:
-    fn read_param_message(&mut self, msg_size: u16) -> Result<ParameterMessage, ULogError> {
+    fn read_param_message(&mut self, _msg_size: u16) -> Result<ParameterMessage, ULogError> {
         let key_len: usize = self.reader.read_u8()? as usize;
         let key_str = self.read_string(key_len)?;
         // The key_str is of the format "<type> <name>", like "float foo"
@@ -695,10 +693,7 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-    fn read_default_parameter(
-        &mut self,
-        msg_size: u16,
-    ) -> Result<DefaultParameterMessage, ULogError> {
+    fn read_default_parameter(&mut self) -> Result<DefaultParameterMessage, ULogError> {
         // Read the default types bitfield
         let default_types_byte = self.reader.read_u8()?;
 
@@ -760,8 +755,8 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-    fn handle_default_parameter(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
-        match self.read_default_parameter(header.msg_size) {
+    fn handle_default_parameter(&mut self) -> Result<(), ULogError> {
+        match self.read_default_parameter() {
             Ok(default_param) => {
                 println!(
                     "Default parameter: {} = {:?} (types: {:?})",
@@ -837,7 +832,7 @@ impl<R: Read> ULogParser<R> {
         loop {
             let header = self.read_message_header()?;
             match header.msg_type {
-                b'I' => match self.read_info_message(header.msg_size) {
+                b'I' => match self.read_info_message() {
                     Ok(info) => {
                         println!(
                             "Info message - {}: {:?}",
@@ -860,7 +855,7 @@ impl<R: Read> ULogParser<R> {
                     self.handle_multi_message(&header)?;
                 }
                 b'Q' => {
-                    self.handle_default_parameter(&header)?;
+                    self.handle_default_parameter()?;
                 }
                 b'A' => {
                     // This is the first message in the data section
@@ -1071,7 +1066,7 @@ impl<R: Read> ULogParser<R> {
         } else {
             0
         };
-        // Don't update the timestamp if it wasn't set in the message
+        // Don't update the timestamp if there wasn't a new timestamp value
         if timestamp > 0 {
             self._current_timestamp = timestamp
         }
@@ -1108,7 +1103,7 @@ impl<R: Read> ULogParser<R> {
                             );
                             self.subscriptions.insert(subscription.msg_id, subscription);
                         }
-                        b'I' => match self.read_info_message(header.msg_size) {
+                        b'I' => match self.read_info_message() {
                             Ok(info) => {
                                 println!("Info message: {:?}", info.clone());
                                 self.info_messages.insert(info.key.clone(), info);
@@ -1173,6 +1168,9 @@ impl<R: Read> ULogParser<R> {
                             // Skipping synchronization messages for now
                             let mut buf = vec![0u8; header.msg_size as usize];
                             self.reader.read_exact(&mut buf)?;
+                        }
+                        b'Q' => {
+                            self.handle_default_parameter()?;
                         }
                         _ => {
                             let mut buf = vec![0u8; header.msg_size as usize];
