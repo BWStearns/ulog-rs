@@ -1,32 +1,83 @@
-
-
 // Format message field
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Field {
     pub field_type: String,
     pub field_name: String,
     pub array_size: Option<usize>,
 }
 
-// Format message
 #[derive(Debug, Clone)]
 pub struct FormatMessage {
     pub name: String,
     pub fields: Vec<Field>,
 }
 
-// Information message
 #[derive(Debug, Clone)]
 pub struct InfoMessage {
     pub key: String,               // The name part of the key (e.g., "ver_hw")
-    pub value_type: InfoValueType, // The type part (e.g., "char[10]")
+    pub value_type: ULogValueType, // The type part (e.g., "char[10]")
     pub array_size: Option<usize>, // Size if it's an array type
-    pub value: InfoValue,          // The actual value
+    pub value: ULogValue,          // The actual value
+}
+
+#[derive(Debug, Clone)]
+pub struct MultiMessage {
+    pub is_continued: bool,
+    pub key: String,
+    pub value_type: ULogValueType,
+    pub array_size: Option<usize>,
+    pub value: ULogValue,
+}
+
+pub trait MultiMessageCombiner {
+    fn combine_values(&self) -> Option<ULogValue>;
+}
+
+impl MultiMessageCombiner for Vec<MultiMessage> {
+    fn combine_values(&self) -> Option<ULogValue> {
+        if self.is_empty() {
+            return None;
+        }
+
+        // All messages should have the same type, so use the first one's type
+        let first = &self[0];
+        match &first.value {
+            ULogValue::CharArray(_) => {
+                // Combine string values
+                let combined: String = self
+                    .iter()
+                    .filter_map(|msg| {
+                        if let ULogValue::CharArray(s) = &msg.value {
+                            Some(s.as_str())
+                        } else {
+                            None
+                        }
+                    })
+                    .collect();
+                Some(ULogValue::CharArray(combined))
+            }
+            ULogValue::UInt8Array(_arr) => {
+                // Combine byte arrays
+                let mut combined = Vec::new();
+                for msg in self {
+                    if let ULogValue::UInt8Array(arr) = &msg.value {
+                        combined.extend_from_slice(arr);
+                    }
+                }
+                Some(ULogValue::UInt8Array(combined))
+            }
+            // Add other array types as needed...
+            _ => {
+                println!("Unsupported multi message value type");
+                None
+            }
+        }
+    }
 }
 
 impl InfoMessage {
     pub fn as_string(&self) -> Option<&str> {
-        if let InfoValue::CharArray(s) = &self.value {
+        if let ULogValue::CharArray(s) = &self.value {
             Some(s)
         } else {
             None
@@ -34,7 +85,7 @@ impl InfoMessage {
     }
 
     pub fn as_u32(&self) -> Option<u32> {
-        if let InfoValue::UInt32(v) = self.value {
+        if let ULogValue::UInt32(v) = self.value {
             Some(v)
         } else {
             None
@@ -42,7 +93,7 @@ impl InfoMessage {
     }
 
     pub fn as_u64(&self) -> Option<u64> {
-        if let InfoValue::UInt64(v) = self.value {
+        if let ULogValue::UInt64(v) = self.value {
             Some(v)
         } else {
             None
@@ -50,7 +101,7 @@ impl InfoMessage {
     }
 
     pub fn as_i32(&self) -> Option<i32> {
-        if let InfoValue::Int32(v) = self.value {
+        if let ULogValue::Int32(v) = self.value {
             Some(v)
         } else {
             None
@@ -58,7 +109,7 @@ impl InfoMessage {
     }
 
     pub fn as_f32(&self) -> Option<f32> {
-        if let InfoValue::Float(v) = self.value {
+        if let ULogValue::Float(v) = self.value {
             Some(v)
         } else {
             None
@@ -66,7 +117,7 @@ impl InfoMessage {
     }
 
     pub fn as_f64(&self) -> Option<f64> {
-        if let InfoValue::Double(v) = self.value {
+        if let ULogValue::Double(v) = self.value {
             Some(v)
         } else {
             None
@@ -74,7 +125,7 @@ impl InfoMessage {
     }
 
     pub fn as_bool(&self) -> Option<bool> {
-        if let InfoValue::Bool(v) = self.value {
+        if let ULogValue::Bool(v) = self.value {
             Some(v)
         } else {
             None
@@ -87,7 +138,7 @@ impl InfoMessage {
     }
 
     pub fn as_u32_array(&self) -> Option<&[u32]> {
-        if let InfoValue::UInt32Array(v) = &self.value {
+        if let ULogValue::UInt32Array(v) = &self.value {
             Some(v)
         } else {
             None
@@ -95,7 +146,7 @@ impl InfoMessage {
     }
 
     pub fn as_f32_array(&self) -> Option<&[f32]> {
-        if let InfoValue::FloatArray(v) = &self.value {
+        if let ULogValue::FloatArray(v) = &self.value {
             Some(v)
         } else {
             None
@@ -103,7 +154,7 @@ impl InfoMessage {
     }
 
     // Method to get type information
-    pub fn value_type(&self) -> &InfoValueType {
+    pub fn value_type(&self) -> &ULogValueType {
         &self.value_type
     }
 
@@ -113,14 +164,14 @@ impl InfoMessage {
     }
 
     // Generic method to get raw value
-    pub fn raw_value(&self) -> &InfoValue {
+    pub fn raw_value(&self) -> &ULogValue {
         &self.value
     }
 }
 
 // Define the possible C types that can appear in info messages
 #[derive(Debug, Clone, PartialEq)]
-pub enum InfoValueType {
+pub enum ULogValueType {
     Int8,
     UInt8,
     Int16,
@@ -137,7 +188,7 @@ pub enum InfoValueType {
 
 // The actual value stored in an info message
 #[derive(Debug, Clone)]
-pub enum InfoValue {
+pub enum ULogValue {
     Int8(i8),
     UInt8(u8),
     Int16(i16),
@@ -162,5 +213,7 @@ pub enum InfoValue {
     FloatArray(Vec<f32>),
     DoubleArray(Vec<f64>),
     BoolArray(Vec<bool>),
-    CharArray(String), // Special case: char arrays are strings
+    CharArray(String),                 // Special case: char arrays are strings
+    Message(Vec<ULogValue>),           // For nested message types
+    MessageArray(Vec<Vec<ULogValue>>), // For arrays of nested message types
 }
