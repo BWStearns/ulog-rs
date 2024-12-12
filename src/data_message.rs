@@ -6,6 +6,11 @@ use crate::{
     format_message::FormatMessage, MessageHeader, ULogError, ULogParser, ULogType, ULogValue,
 };
 
+struct NestedMessageResult {
+    data: Vec<ULogValue>,
+    bytes_read: usize,
+}
+
 #[derive(Debug)]
 pub struct DataMessage {
     msg_id: u16,
@@ -161,5 +166,80 @@ impl<R: Read> ULogParser<R> {
             .data
             .push(data.data);
         Ok(())
+    }
+
+    fn read_nested_message(
+        &mut self,
+        format: &FormatMessage,
+    ) -> Result<NestedMessageResult, ULogError> {
+        let mut nested_data = Vec::new();
+        let mut total_bytes_read = 0;
+
+        for field in &format.fields {
+            // Skip padding fields in nested messages
+            if field.field_name.starts_with("_padding") {
+                continue;
+            }
+
+            let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
+
+            let (value, bytes) = match type_info {
+                ULogType::Basic(value_type) => {
+                    let value = self.read_typed_value(&value_type, array_size)?;
+                    let bytes = match &value {
+                        ULogValue::BoolArray(v) => v.len(),
+                        ULogValue::CharArray(s) => s.len(),
+                        ULogValue::DoubleArray(v) => v.len() * 8,
+                        ULogValue::FloatArray(v) => v.len() * 4,
+                        ULogValue::Int16(_) | ULogValue::UInt16(_) => 2,
+                        ULogValue::Int16Array(v) => v.len() * 2,
+                        ULogValue::Int32(_) | ULogValue::UInt32(_) | ULogValue::Float(_) => 4,
+                        ULogValue::Int32Array(v) => v.len() * 4,
+                        ULogValue::Int64(_) | ULogValue::UInt64(_) | ULogValue::Double(_) => 8,
+                        ULogValue::Int64Array(v) => v.len() * 8,
+                        ULogValue::Int8(_)
+                        | ULogValue::UInt8(_)
+                        | ULogValue::Bool(_)
+                        | ULogValue::Char(_) => 1,
+                        ULogValue::Int8Array(v) => v.len(),
+                        ULogValue::UInt8Array(v) => v.len(),
+                        ULogValue::UInt16Array(v) => v.len() * 2,
+                        ULogValue::UInt32Array(v) => v.len() * 4,
+                        ULogValue::UInt64Array(v) => v.len() * 8,
+                        _ => 0, // Should never happen for basic types
+                    };
+                    (value, bytes)
+                }
+                ULogType::Message(msg_type) => {
+                    let nested_format = self
+                        .formats
+                        .get(&msg_type)
+                        .ok_or_else(|| {
+                            ULogError::ParseError(format!("Unknown message type: {}", msg_type))
+                        })?
+                        .clone();
+
+                    if let Some(size) = array_size {
+                        let mut array_values = Vec::with_capacity(size);
+                        let mut array_bytes = 0;
+                        for _ in 0..size {
+                            let result = self.read_nested_message(&nested_format)?;
+                            array_bytes += result.bytes_read;
+                            array_values.push(result.data);
+                        }
+                        (ULogValue::MessageArray(array_values), array_bytes)
+                    } else {
+                        let result = self.read_nested_message(&nested_format)?;
+                        (ULogValue::Message(result.data), result.bytes_read)
+                    }
+                }
+            };
+            total_bytes_read += bytes;
+            nested_data.push(value);
+        }
+        Ok(NestedMessageResult {
+            data: nested_data,
+            bytes_read: total_bytes_read,
+        })
     }
 }

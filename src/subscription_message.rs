@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::{collections::HashMap, io::Read};
 
 use byteorder::{LittleEndian, ReadBytesExt};
 
@@ -15,6 +15,10 @@ pub struct SubscriptionMessage {
 }
 
 impl<R: Read> ULogParser<R> {
+    pub fn subscriptions(&self) -> &HashMap<u16, SubscriptionMessage> {
+        &self.subscriptions
+    }
+
     fn read_subscription(&mut self, msg_size: u16) -> Result<SubscriptionMessage, ULogError> {
         let multi_id = self.reader.read_u8()?;
         let msg_id = self.reader.read_u16::<LittleEndian>()?;

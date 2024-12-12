@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::{collections::HashMap, io::Read};
 
 use byteorder::{LittleEndian, ReadBytesExt};
 
@@ -18,61 +18,6 @@ pub struct InfoMessage {
     pub value_type: ULogValueType, // The type part (e.g., "char[10]")
     pub array_size: Option<usize>, // Size if it's an array type
     pub value: ULogValue,          // The actual value
-}
-
-#[derive(Debug, Clone)]
-pub struct MultiMessage {
-    pub is_continued: bool,
-    pub key: String,
-    pub value_type: ULogValueType,
-    pub array_size: Option<usize>,
-    pub value: ULogValue,
-}
-
-pub trait MultiMessageCombiner {
-    fn combine_values(&self) -> Option<ULogValue>;
-}
-
-impl MultiMessageCombiner for Vec<MultiMessage> {
-    fn combine_values(&self) -> Option<ULogValue> {
-        if self.is_empty() {
-            return None;
-        }
-
-        // All messages should have the same type, so use the first one's type
-        let first = &self[0];
-        match &first.value {
-            ULogValue::CharArray(_) => {
-                // Combine string values
-                let combined: String = self
-                    .iter()
-                    .filter_map(|msg| {
-                        if let ULogValue::CharArray(s) = &msg.value {
-                            Some(s.as_str())
-                        } else {
-                            None
-                        }
-                    })
-                    .collect();
-                Some(ULogValue::CharArray(combined))
-            }
-            ULogValue::UInt8Array(_arr) => {
-                // Combine byte arrays
-                let mut combined = Vec::new();
-                for msg in self {
-                    if let ULogValue::UInt8Array(arr) = &msg.value {
-                        combined.extend_from_slice(arr);
-                    }
-                }
-                Some(ULogValue::UInt8Array(combined))
-            }
-            // Add other array types as needed...
-            _ => {
-                println!("Unsupported multi message value type");
-                None
-            }
-        }
-    }
 }
 
 impl InfoMessage {
@@ -219,6 +164,10 @@ pub enum ULogValue {
 }
 
 impl<R: Read> ULogParser<R> {
+    pub fn info_messages(&self) -> &HashMap<String, InfoMessage> {
+        &self.info_messages
+    }
+
     // In read_info_message, modify the value reading section:
     pub fn read_info_message(&mut self) -> Result<InfoMessage, ULogError> {
         let key_len = self.reader.read_u8()? as usize;

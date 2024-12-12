@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::{collections::HashMap, io::Read};
 
 use byteorder::{LittleEndian, ReadBytesExt};
 
@@ -11,6 +11,10 @@ pub struct FormatMessage {
 }
 
 impl<R: Read> ULogParser<R> {
+    pub fn formats(&self) -> &HashMap<String, FormatMessage> {
+        &self.formats
+    }
+
     pub fn read_format_message(&mut self, msg_size: u16) -> Result<FormatMessage, ULogError> {
         let format_str = self.read_string(msg_size as usize)?;
 
@@ -75,7 +79,7 @@ impl<R: Read> ULogParser<R> {
         Ok(FormatMessage { name, fields })
     }
 
-    pub fn handle_thing(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+    pub fn handle_format_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
         let format = self.read_format_message(header.msg_size)?;
         self.formats.insert(format.name.clone(), format);
         Ok(())
