@@ -44,7 +44,8 @@ impl MultiMessageCombiner for Vec<MultiMessage> {
         match &first.value {
             ULogValue::CharArray(_) => {
                 // Combine string values
-                let combined: String = self.iter()
+                let combined: String = self
+                    .iter()
                     .filter_map(|msg| {
                         if let ULogValue::CharArray(s) = &msg.value {
                             Some(s.as_str())

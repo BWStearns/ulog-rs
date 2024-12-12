@@ -476,7 +476,6 @@ impl<R: Read> ULogParser<R> {
             b'A' | // Add message
             b'R' | // Remove message
             b'D' | // Data message
-            b'H' | // Heartbeat message
             b'I' | // Info message
             b'M' | // Multi info message
             b'P' | // Parameter message
@@ -783,10 +782,7 @@ impl<R: Read> ULogParser<R> {
         match self.read_param_message(header.msg_size) {
             Ok(param) => {
                 println!("Parameter change: {} = {:?}", param.key, param.value);
-                let parameter_changes = self
-                    .changed_params
-                    .entry(param.key.clone())
-                    .or_insert(Vec::new());
+                let parameter_changes = self.changed_params.entry(param.key.clone()).or_default();
                 parameter_changes.push(param);
                 Ok(())
             }
@@ -858,14 +854,8 @@ impl<R: Read> ULogParser<R> {
                 }
                 b'P' => {
                     let param = self.read_param_message(header.msg_size)?;
-                    // println!(
-                    //     "Parameter message - {}: {:?}",
-                    //     param.key.clone(),
-                    //     param.value.clone()
-                    // );
                     self.initial_params.insert(param.key.clone(), param);
                 }
-                // Multis are gonna be a pain, skipping for now
                 b'M' => {
                     self.handle_multi_message(&header)?;
                 }
@@ -876,10 +866,6 @@ impl<R: Read> ULogParser<R> {
                     // This is the first message in the data section
                     // Process the first subscription message but don't break yet
                     let subscription = self.read_subscription(header.msg_size)?;
-                    println!(
-                        "Found subscription: {} (msg_id: {})",
-                        subscription.message_name, subscription.msg_id
-                    );
                     self.subscriptions.insert(subscription.msg_id, subscription);
                     // Now break to continue parsing data section
                     break;
@@ -961,11 +947,9 @@ impl<R: Read> ULogParser<R> {
                     }
                 }
             };
-
             total_bytes_read += bytes;
             nested_data.push(value);
         }
-
         Ok(NestedMessageResult {
             data: nested_data,
             bytes_read: total_bytes_read,
@@ -995,7 +979,6 @@ impl<R: Read> ULogParser<R> {
             {
                 continue;
             }
-
             // Handle padding fields
             if field.field_name.starts_with("_padding") {
                 let padding_size = if let Some(size) = field.array_size {
@@ -1014,9 +997,7 @@ impl<R: Read> ULogParser<R> {
                 bytes_read += padding_size;
                 continue;
             }
-
             let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
-
             let (value, field_bytes) = match type_info {
                 ULogType::Basic(value_type) => {
                     let value = self.read_typed_value(&value_type, array_size)?;
@@ -1134,6 +1115,9 @@ impl<R: Read> ULogParser<R> {
                             }
                             Err(e) => println!("Error reading info message: {}", e),
                         },
+                        b'M' => {
+                            self.handle_multi_message(&header)?;
+                        }
                         b'L' => match self.read_logged_message(header.msg_size) {
                             Ok(log_msg) => {
                                 println!(
@@ -1186,6 +1170,7 @@ impl<R: Read> ULogParser<R> {
                             self.reader.read_exact(&mut buf)?;
                         }
                         b'S' => {
+                            // Skipping synchronization messages for now
                             let mut buf = vec![0u8; header.msg_size as usize];
                             self.reader.read_exact(&mut buf)?;
                         }

@@ -1,7 +1,7 @@
 use std::fs::File;
 // use std::path::Path;
 
-use ulog_parser::{info_message::MultiMessageCombiner, ULogParser};
+use ulog_parser::ULogParser;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get the file path from the home directory
