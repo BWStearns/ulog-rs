@@ -1,15 +1,15 @@
+use std::io::Read;
+
+use byteorder::{LittleEndian, ReadBytesExt};
+
+use crate::{MessageHeader, ULogError, ULogParser, ULogType};
+
 // Format message field
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Field {
     pub field_type: String,
     pub field_name: String,
     pub array_size: Option<usize>,
-}
-
-#[derive(Debug, Clone)]
-pub struct FormatMessage {
-    pub name: String,
-    pub fields: Vec<Field>,
 }
 
 #[derive(Debug, Clone)]
@@ -216,4 +216,63 @@ pub enum ULogValue {
     CharArray(String),                 // Special case: char arrays are strings
     Message(Vec<ULogValue>),           // For nested message types
     MessageArray(Vec<Vec<ULogValue>>), // For arrays of nested message types
+}
+
+impl<R: Read> ULogParser<R> {
+    // In read_info_message, modify the value reading section:
+    pub fn read_info_message(&mut self) -> Result<InfoMessage, ULogError> {
+        let key_len = self.reader.read_u8()? as usize;
+        let key_str = self.read_string(key_len)?;
+
+        // Split the key string into type and name
+        let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
+        if parts.len() != 2 {
+            return Err(ULogError::ParseError(
+                "Invalid info message key format".to_string(),
+            ));
+        }
+
+        let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
+        let key_name = parts[1].to_string();
+
+        // Handle basic types and message types differently
+        let value = match &ulog_type {
+            ULogType::Basic(value_type) => {
+                // Now we correctly pass a ULogValueType
+                self.read_typed_value(value_type, array_size)?
+            }
+            ULogType::Message(_) => {
+                return Err(ULogError::ParseError(
+                    "Message types not allowed in info messages".to_string(),
+                ));
+            }
+        };
+
+        // Extract the value_type for storage in InfoMessage
+        let value_type = match ulog_type {
+            ULogType::Basic(vt) => vt,
+            _ => unreachable!(), // We've already handled the Message case above
+        };
+
+        Ok(InfoMessage {
+            key: key_name,
+            value_type,
+            array_size,
+            value,
+        })
+    }
+
+    pub fn handle_info_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        match self.read_info_message() {
+            Ok(info) => {
+                println!("Info message: {:?}", info.clone());
+                self.info_messages.insert(info.key.clone(), info);
+                Ok(())
+            }
+            Err(e) => {
+                println!("Error reading info message: {}", e);
+                Err(e)
+            }
+        }
+    }
 }

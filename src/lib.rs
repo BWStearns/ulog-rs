@@ -1,22 +1,22 @@
+pub mod data_message;
+pub mod format_message;
 pub mod info_message;
+pub mod logged_message;
+pub mod subscription_message;
 pub mod tagged_logged_message;
 
 use byteorder::{LittleEndian, ReadBytesExt};
+use format_message::FormatMessage;
 use info_message::*;
+use logged_message::LoggedMessage;
 use std::collections::HashMap;
 use std::io::{self, Read};
+use subscription_message::SubscriptionMessage;
 use tagged_logged_message::*;
 use thiserror::Error;
 
 /// Maximum reasonable message size (64KB should be plenty)
 const MAX_MESSAGE_SIZE: u16 = 65535;
-
-#[derive(Debug, Clone)]
-pub struct LoggedMessage {
-    pub log_level: u8,
-    pub timestamp: u64,
-    pub message: String,
-}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ULogType {
@@ -43,14 +43,6 @@ pub enum ULogError {
     #[error("IncompatibleFlags: {:?}", .0)]
     IncompatibleFlags(Vec<u8>),
 }
-
-#[derive(Debug)]
-pub struct DataMessage {
-    msg_id: u16,
-    time_us: u64,
-    data: Vec<ULogValue>,
-}
-
 // File header (16 bytes)
 #[derive(Debug)]
 pub struct ULogHeader {
@@ -111,16 +103,6 @@ impl DefaultParameterMessage {
 
         types
     }
-}
-
-// Subscription message
-#[derive(Debug)]
-pub struct SubscriptionMessage {
-    pub multi_id: u8,
-    pub msg_id: u16,
-    pub message_name: String,
-    pub data: Vec<Vec<ULogValue>>,
-    pub format: FormatMessage,
 }
 
 #[derive(Debug)]
@@ -210,10 +192,6 @@ impl<R: Read> ULogParser<R> {
 
     pub fn subscriptions(&self) -> &HashMap<u16, SubscriptionMessage> {
         &self.subscriptions
-    }
-
-    pub fn logged_messages(&self) -> &[LoggedMessage] {
-        &self.logged_messages
     }
 
     pub fn initial_params(&self) -> &HashMap<String, ParameterMessage> {
@@ -391,87 +369,6 @@ impl<R: Read> ULogParser<R> {
         String::from_utf8(buf).map_err(|_| ULogError::InvalidString)
     }
 
-    pub fn read_format_message(&mut self, msg_size: u16) -> Result<FormatMessage, ULogError> {
-        let format_str = self.read_string(msg_size as usize)?;
-
-        let parts: Vec<&str> = format_str.split(':').collect();
-        if parts.len() != 2 {
-            return Err(ULogError::InvalidMessageType(b'F'));
-        }
-
-        let name = parts[0].to_string();
-        let fields = parts[1]
-            .split(';')
-            .filter(|s| !s.is_empty())
-            .map(|field| {
-                let mut parts = field.split_whitespace();
-                let type_part = parts.next().unwrap_or("");
-                let name_part = parts.next().unwrap_or("");
-
-                // Check if this is a padding field
-                if name_part.starts_with("_padding") {
-                    // Parse the padding size from field name (format: _padding[N])
-                    if let Some(size_str) = name_part
-                        .strip_prefix("_padding")
-                        .and_then(|s| s.strip_prefix('['))
-                        .and_then(|s| s.strip_suffix(']'))
-                        .and_then(|s| s.parse::<usize>().ok())
-                    {
-                        // Determine correct type based on padding size
-                        let field_type = match size_str {
-                            1 => "uint8_t".to_string(),
-                            2 => "uint16_t".to_string(),
-                            4 => "uint32_t".to_string(),
-                            8 => "uint64_t".to_string(),
-                            n => format!("uint8_t[{}]", n), // default to byte array for other sizes
-                        };
-
-                        return Field {
-                            field_type,
-                            field_name: name_part.to_string(),
-                            array_size: if size_str > 8 { Some(size_str) } else { None },
-                        };
-                    }
-                }
-                // Parse array size if present
-                let (field_type, array_size) = if type_part.contains('[') {
-                    let array_parts: Vec<&str> = type_part.split(['[', ']']).collect();
-                    (
-                        array_parts[0].to_string(),
-                        Some(array_parts[1].parse().unwrap_or(0)),
-                    )
-                } else {
-                    (type_part.to_string(), None)
-                };
-
-                Field {
-                    field_type,
-                    field_name: name_part.to_string(),
-                    array_size,
-                }
-            })
-            .collect();
-
-        Ok(FormatMessage { name, fields })
-    }
-
-    fn read_subscription(&mut self, msg_size: u16) -> Result<SubscriptionMessage, ULogError> {
-        let multi_id = self.reader.read_u8()?;
-        let msg_id = self.reader.read_u16::<LittleEndian>()?;
-        let name = self.read_string(msg_size as usize - 3)?; // -3 for multi_id and msg_id
-        let format = self
-            .formats
-            .get(&name)
-            .ok_or_else(|| ULogError::ParseError(format!("Unknown format name: {}", name)))?;
-        Ok(SubscriptionMessage {
-            multi_id,
-            msg_id,
-            message_name: name,
-            data: vec![],
-            format: format.clone(),
-        })
-    }
-
     /// Check if a byte represents a valid ULog message type
     fn is_valid_message_type(msg_type: u8) -> bool {
         let valid = matches!(
@@ -499,20 +396,6 @@ impl<R: Read> ULogParser<R> {
         valid
     }
 
-    fn read_logged_message(&mut self, msg_size: u16) -> Result<LoggedMessage, ULogError> {
-        let log_level = self.reader.read_u8()?;
-        let timestamp = self.reader.read_u64::<LittleEndian>()?;
-        // message size is total size minus 9 bytes (1 for log_level + 8 for timestamp)
-        let message = self.read_string(msg_size as usize - 9)?;
-        self._current_timestamp = timestamp;
-
-        Ok(LoggedMessage {
-            log_level,
-            timestamp,
-            message,
-        })
-    }
-
     pub fn log_level_to_string(level: u8) -> &'static str {
         let level = (level as char).to_digit(10).unwrap_or(0);
         match level {
@@ -526,49 +409,6 @@ impl<R: Read> ULogParser<R> {
             7 => "DEBUG",
             _ => "UNKNOWN",
         }
-    }
-
-    // In read_info_message, modify the value reading section:
-    fn read_info_message(&mut self) -> Result<InfoMessage, ULogError> {
-        let key_len = self.reader.read_u8()? as usize;
-        let key_str = self.read_string(key_len)?;
-
-        // Split the key string into type and name
-        let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
-        if parts.len() != 2 {
-            return Err(ULogError::ParseError(
-                "Invalid info message key format".to_string(),
-            ));
-        }
-
-        let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
-        let key_name = parts[1].to_string();
-
-        // Handle basic types and message types differently
-        let value = match &ulog_type {
-            ULogType::Basic(value_type) => {
-                // Now we correctly pass a ULogValueType
-                self.read_typed_value(value_type, array_size)?
-            }
-            ULogType::Message(_) => {
-                return Err(ULogError::ParseError(
-                    "Message types not allowed in info messages".to_string(),
-                ));
-            }
-        };
-
-        // Extract the value_type for storage in InfoMessage
-        let value_type = match ulog_type {
-            ULogType::Basic(vt) => vt,
-            _ => unreachable!(), // We've already handled the Message case above
-        };
-
-        Ok(InfoMessage {
-            key: key_name,
-            value_type,
-            array_size,
-            value,
-        })
     }
 
     fn handle_multi_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
@@ -836,17 +676,7 @@ impl<R: Read> ULogParser<R> {
         loop {
             let header = self.read_message_header()?;
             match header.msg_type {
-                b'I' => match self.read_info_message() {
-                    Ok(info) => {
-                        println!(
-                            "Info message - {}: {:?}",
-                            info.key.clone(),
-                            info.value.clone()
-                        );
-                        self.info_messages.insert(info.key.clone(), info);
-                    }
-                    Err(e) => println!("Error reading info message: {}", e),
-                },
+                b'I' => self.handle_info_message(&header)?,
                 b'F' => {
                     let format = self.read_format_message(header.msg_size)?;
                     self.formats.insert(format.name.clone(), format);
@@ -855,17 +685,12 @@ impl<R: Read> ULogParser<R> {
                     let param = self.read_param_message(header.msg_size)?;
                     self.initial_params.insert(param.key.clone(), param);
                 }
-                b'M' => {
-                    self.handle_multi_message(&header)?;
-                }
-                b'Q' => {
-                    self.handle_default_parameter()?;
-                }
+                b'M' => self.handle_multi_message(&header)?,
+                b'Q' => self.handle_default_parameter()?,
                 b'A' => {
                     // This is the first message in the data section
                     // Process the first subscription message but don't break yet
-                    let subscription = self.read_subscription(header.msg_size)?;
-                    self.subscriptions.insert(subscription.msg_id, subscription);
+                    self.handle_subscription_message(&header)?;
                     // Now break to continue parsing data section
                     break;
                 }
@@ -955,132 +780,6 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-    pub fn read_data_message(
-        &mut self,
-        msg_id: u16,
-        msg_size: u16,
-        format: &FormatMessage,
-    ) -> Result<DataMessage, ULogError> {
-        let mut data: Vec<ULogValue> = Vec::new();
-        let mut bytes_read = 2; // Account for msg_id that was already read
-
-        let has_trailing_padding = format
-            .fields
-            .last()
-            .map(|f| f.field_name.starts_with("_padding"))
-            .unwrap_or(false);
-
-        for (i, field) in format.fields.iter().enumerate() {
-            // Skip trailing padding field
-            if has_trailing_padding
-                && i == format.fields.len() - 1
-                && field.field_name.starts_with("_padding")
-            {
-                continue;
-            }
-            // Handle padding fields
-            if field.field_name.starts_with("_padding") {
-                let padding_size = if let Some(size) = field.array_size {
-                    size
-                } else {
-                    match field.field_type.as_str() {
-                        "uint8_t" => 1,
-                        "uint16_t" => 2,
-                        "uint32_t" => 4,
-                        "uint64_t" => 8,
-                        _ => 1,
-                    }
-                };
-                let mut padding = vec![0u8; padding_size];
-                self.reader.read_exact(&mut padding)?;
-                bytes_read += padding_size;
-                continue;
-            }
-            let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
-            let (value, field_bytes) = match type_info {
-                ULogType::Basic(value_type) => {
-                    let value = self.read_typed_value(&value_type, array_size)?;
-                    let bytes = match &value {
-                        ULogValue::BoolArray(v) => v.len(),
-                        ULogValue::CharArray(s) => s.len(),
-                        ULogValue::DoubleArray(v) => v.len() * 8,
-                        ULogValue::FloatArray(v) => v.len() * 4,
-                        ULogValue::Int16(_) | ULogValue::UInt16(_) => 2,
-                        ULogValue::Int16Array(v) => v.len() * 2,
-                        ULogValue::Int32(_) | ULogValue::UInt32(_) | ULogValue::Float(_) => 4,
-                        ULogValue::Int32Array(v) => v.len() * 4,
-                        ULogValue::Int64(_) | ULogValue::UInt64(_) | ULogValue::Double(_) => 8,
-                        ULogValue::Int64Array(v) => v.len() * 8,
-                        ULogValue::Int8(_)
-                        | ULogValue::UInt8(_)
-                        | ULogValue::Bool(_)
-                        | ULogValue::Char(_) => 1,
-                        ULogValue::Int8Array(v) => v.len(),
-                        ULogValue::UInt8Array(v) => v.len(),
-                        ULogValue::UInt16Array(v) => v.len() * 2,
-                        ULogValue::UInt32Array(v) => v.len() * 4,
-                        ULogValue::UInt64Array(v) => v.len() * 8,
-                        _ => 0,
-                    };
-                    (value, bytes)
-                }
-                ULogType::Message(msg_type) => {
-                    let nested_format = self
-                        .formats
-                        .get(&msg_type)
-                        .ok_or_else(|| {
-                            ULogError::ParseError(format!("Unknown message type: {}", msg_type))
-                        })?
-                        .clone();
-
-                    if let Some(size) = array_size {
-                        let mut array_values = Vec::with_capacity(size);
-                        let mut total_bytes = 0;
-                        for _ in 0..size {
-                            let result = self.read_nested_message(&nested_format)?;
-                            total_bytes += result.bytes_read;
-                            array_values.push(result.data);
-                        }
-                        (ULogValue::MessageArray(array_values), total_bytes)
-                    } else {
-                        let result = self.read_nested_message(&nested_format)?;
-                        (ULogValue::Message(result.data), result.bytes_read)
-                    }
-                }
-            };
-
-            bytes_read += field_bytes;
-            data.push(value);
-        }
-
-        // Handle any remaining bytes in the message
-        if bytes_read < msg_size as usize {
-            let remaining = msg_size as usize - bytes_read;
-            println!("Message had {} trailing bytes, skipping", remaining);
-            let mut remaining_bytes = vec![0u8; remaining];
-            self.reader.read_exact(&mut remaining_bytes)?;
-        } else if bytes_read > msg_size as usize {
-            return Err(ULogError::ParseError(format!(
-                "Read too many bytes: {} > {} for message {}",
-                bytes_read, msg_size, format.name
-            )));
-        }
-        let timestamp = if let Some(ULogValue::UInt64(ts)) = data.first() {
-            *ts
-        } else {
-            0
-        };
-        // Don't update the timestamp if there wasn't a new timestamp value
-        if timestamp > 0 {
-            self._current_timestamp = timestamp
-        }
-        Ok(DataMessage {
-            msg_id,
-            time_us: timestamp,
-            data,
-        })
-    }
-
     pub fn parse_data(&mut self) -> Result<(), ULogError> {
         println!("Data section messages:");
         loop {
@@ -1099,90 +798,22 @@ impl<R: Read> ULogParser<R> {
                     }
 
                     match header.msg_type {
-                        b'A' => {
-                            let subscription = self.read_subscription(header.msg_size)?;
-                            println!(
-                                "Found subscription: {} (msg_id: {})",
-                                subscription.message_name, subscription.msg_id
-                            );
-                            self.subscriptions.insert(subscription.msg_id, subscription);
-                        }
-                        b'I' => match self.read_info_message() {
-                            Ok(info) => {
-                                println!("Info message: {:?}", info.clone());
-                                self.info_messages.insert(info.key.clone(), info);
-                            }
-                            Err(e) => println!("Error reading info message: {}", e),
-                        },
-                        b'M' => {
-                            self.handle_multi_message(&header)?;
-                        }
-                        b'L' => match self.read_logged_message(header.msg_size) {
-                            Ok(log_msg) => {
-                                println!(
-                                    "[{}][{} μs] {}",
-                                    Self::log_level_to_string(log_msg.log_level),
-                                    log_msg.timestamp,
-                                    log_msg.message
-                                );
-                                self.logged_messages.push(log_msg);
-                            }
-                            Err(e) => println!("Error reading log message: {}", e),
-                        },
-                        b'C' => {
-                            self.read_tagged_logged_message(header.msg_size)?;
-                        }
-                        b'D' => {
-                            let msg_id = self.reader.read_u16::<LittleEndian>()?;
-                            let format_name = self
-                                .subscriptions
-                                .get(&msg_id)
-                                .ok_or_else(|| {
-                                    ULogError::ParseError(format!("Unknown msg_id: {}", msg_id))
-                                })?
-                                .message_name
-                                .clone();
-                            let format = self
-                                .formats
-                                .get(&format_name)
-                                .ok_or_else(|| {
-                                    ULogError::ParseError(format!(
-                                        "Unknown format: {}",
-                                        format_name
-                                    ))
-                                })?
-                                .clone();
-                            let data = self.read_data_message(msg_id, header.msg_size, &format)?;
-
-                            self.subscriptions
-                                .get_mut(&msg_id)
-                                .unwrap()
-                                .data
-                                .push(data.data);
-                        }
-                        b'O' => {
-                            self.handle_dropout(&header)?;
-                        }
-                        b'P' => {
-                            self.handle_parameter_change(&header)?;
-                        }
-                        b'R' => {
-                            // Skip unsubscription messages for now since they're unused
-                            let mut buf = vec![0u8; header.msg_size as usize];
-                            self.reader.read_exact(&mut buf)?;
-                        }
-                        b'S' => {
-                            // Skipping synchronization messages for now
-                            let mut buf = vec![0u8; header.msg_size as usize];
-                            self.reader.read_exact(&mut buf)?;
-                        }
+                        b'A' => self.handle_subscription_message(&header)?,
+                        b'I' => self.handle_info_message(&header)?,
+                        b'M' => self.handle_multi_message(&header)?,
+                        b'L' => self.handle_logged_message(&header)?,
+                        b'C' => self.handle_tagged_logged_message(&header)?,
+                        b'D' => self.handle_data_message(&header)?,
+                        b'O' => self.handle_dropout(&header)?,
+                        b'P' => self.handle_parameter_change(&header)?,
+                        // Skip unsubscription messages for now since they're unused
+                        b'R' => self.skip_message(&header)?,
+                        // Skipping synchronization messages for now
+                        b'S' => self.skip_message(&header)?,
                         b'Q' => {
                             self.handle_default_parameter()?;
                         }
-                        _ => {
-                            let mut buf = vec![0u8; header.msg_size as usize];
-                            self.reader.read_exact(&mut buf)?;
-                        }
+                        _ => self.skip_message(&header)?,
                     }
                 }
                 Err(ULogError::Io(e)) if e.kind() == io::ErrorKind::UnexpectedEof => {
@@ -1192,6 +823,12 @@ impl<R: Read> ULogParser<R> {
                 Err(e) => return Err(e),
             }
         }
+        Ok(())
+    }
+
+    fn skip_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        let mut buf = vec![0u8; header.msg_size as usize];
+        self.reader.read_exact(&mut buf)?;
         Ok(())
     }
 }

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, io::Read};
 
-use crate::{ULogError, ULogParser};
+use crate::{MessageHeader, ULogError, ULogParser};
 use byteorder::{LittleEndian, ReadBytesExt};
 
 #[derive(Debug, Clone)]
@@ -30,8 +30,11 @@ impl<R: Read> ULogParser<R> {
         })
     }
 
-    pub fn handle_tagged_logged_message(&mut self, msg_size: u16) -> Result<(), ULogError> {
-        let msg = self.read_tagged_logged_message(msg_size)?;
+    pub fn handle_tagged_logged_message(
+        &mut self,
+        header: &MessageHeader,
+    ) -> Result<(), ULogError> {
+        let msg = self.read_tagged_logged_message(header.msg_size)?;
         if let Some(tag_hash) = self.logged_messages_tagged.get_mut(&msg.tag) {
             tag_hash.push(msg);
         } else {
