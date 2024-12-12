@@ -25,13 +25,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\nParsing definitions section...");
     parser.parse_definitions()?;
     // Join the initial params into a single string
-    let init_params_str = parser
-        .initial_params()
-        .iter()
-        .map(|(_, param)| format!("{}: {:?}", param.key, param.value))
-        .collect::<Vec<_>>()
-        .join(", ");
-    println!("Initial parameters: {}", init_params_str);
+    // let init_params_str = parser
+    //     .initial_params()
+    //     .iter()
+    //     .map(|(_, param)| format!("{}: {:?}", param.key, param.value))
+    //     .collect::<Vec<_>>()
+    //     .join(", ");
+    // println!("Initial parameters: {}", init_params_str);
 
     // Print format definitions
     println!("\nFormat definitions found:");
@@ -72,16 +72,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
 
-    for (sub_id, subscription) in parser.subscriptions() {
-        println!(
-            "\nSubscription: {}, {}, {}, {}",
-            sub_id,
-            subscription.message_name,
-            subscription.multi_id,
-            subscription.data.len()
-        );
-    }
-
     // Print summary of subscriptions
     println!("\nSummary of subscriptions:");
     let subscriptions = parser.subscriptions();
@@ -96,18 +86,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
 
-    println!("\nSpecific Messages:");
-    let specific_subscription = parser
-        .subscriptions()
-        .iter()
-        .find(|(_, sub)| sub.message_name == "telemetry_status")
-        .expect("Could not find telemetry_status subscription")
-        .1;
-    for message in specific_subscription.data.iter() {
-        println!("{:?}", message);
-    }
+    // println!("\nSpecific Messages:");
+    // let specific_subscription = parser
+    //     .subscriptions()
+    //     .iter()
+    //     .find(|(_, sub)| sub.message_name == "telemetry_status")
+    //     .expect("Could not find telemetry_status subscription")
+    //     .1;
+    // for message in specific_subscription.data.iter() {
+    //     println!("{:?}", message);
+    // }
 
-    println!("{:?}", specific_subscription);
+    // println!("{:?}", specific_subscription);
 
     Ok(())
 }

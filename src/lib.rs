@@ -86,7 +86,7 @@ pub struct SubscriptionMessage {
     pub msg_id: u16,
     pub message_name: String,
     pub data: Vec<Vec<ULogValue>>,
-    pub format: FormatMessage
+    pub format: FormatMessage,
 }
 
 #[derive(Debug)]
@@ -98,6 +98,11 @@ pub struct ULogParser<R: Read> {
     logged_messages: Vec<LoggedMessage>,
     info_messages: HashMap<String, InfoMessage>,
     initial_params: HashMap<String, ParameterMessage>,
+}
+
+struct NestedMessageResult {
+    data: Vec<ULogValue>,
+    bytes_read: usize,
 }
 
 impl<R: Read> ULogParser<R> {
@@ -149,6 +154,13 @@ impl<R: Read> ULogParser<R> {
 
     pub fn initial_params(&self) -> &HashMap<String, ParameterMessage> {
         &self.initial_params
+    }
+
+    fn dump_next_bytes(&mut self, count: usize) -> Result<(), ULogError> {
+        let mut buf = vec![0u8; count];
+        self.reader.read_exact(&mut buf)?;
+        println!("Next {} bytes: {:?}", count, buf);
+        Ok(())
     }
 
     pub fn read_message_header(&mut self) -> Result<MessageHeader, ULogError> {
@@ -368,9 +380,10 @@ impl<R: Read> ULogParser<R> {
         let multi_id = self.reader.read_u8()?;
         let msg_id = self.reader.read_u16::<LittleEndian>()?;
         let name = self.read_string(msg_size as usize - 3)?; // -3 for multi_id and msg_id
-        let format = self.formats.get(&name).ok_or_else(|| {
-            ULogError::ParseError(format!("Unknown format name: {}", name))
-        })?;
+        let format = self
+            .formats
+            .get(&name)
+            .ok_or_else(|| ULogError::ParseError(format!("Unknown format name: {}", name)))?;
         Ok(SubscriptionMessage {
             multi_id,
             msg_id,
@@ -596,8 +609,9 @@ impl<R: Read> ULogParser<R> {
         Ok(())
     }
 
-    fn read_nested_message(&mut self, format: &FormatMessage) -> Result<Vec<ULogValue>, ULogError> {
+    fn read_nested_message(&mut self, format: &FormatMessage) -> Result<NestedMessageResult, ULogError> {
         let mut nested_data = Vec::new();
+        let mut total_bytes_read = 0;
 
         for field in &format.fields {
             // Skip padding fields in nested messages
@@ -607,112 +621,10 @@ impl<R: Read> ULogParser<R> {
 
             let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
 
-            let value = match type_info {
-                ULogType::Basic(value_type) => self.read_typed_value(&value_type, array_size)?,
-                ULogType::Message(msg_type) => {
-                    // Handle nested-nested messages
-                    let nested_format = self
-                        .formats
-                        .get(&msg_type)
-                        .ok_or_else(|| {
-                            ULogError::ParseError(format!("Unknown message type: {}", msg_type))
-                        })?
-                        .clone();
-
-                    if array_size.is_some() {
-                        let mut array_values = Vec::new();
-                        for _ in 0..array_size.unwrap() {
-                            let nested_nested_data = self.read_nested_message(&nested_format)?;
-                            array_values.push(nested_nested_data);
-                        }
-                        ULogValue::MessageArray(array_values)
-                    } else {
-                        let nested_nested_data = self.read_nested_message(&nested_format)?;
-                        ULogValue::Message(nested_nested_data)
-                    }
-                }
-            };
-
-            nested_data.push(value);
-        }
-
-        Ok(nested_data)
-    }
-
-    pub fn read_data_message(
-        &mut self,
-        msg_id: u16,
-        msg_size: u16,
-        format: &FormatMessage,
-    ) -> Result<DataMessage, ULogError> {
-        println!(
-            "Reading data message. Size: {}, Format: {}",
-            msg_size, format.name
-        );
-        println!("Fields to read:");
-        for field in &format.fields {
-            println!(
-                "  {} {} {:?}",
-                field.field_type, field.field_name, field.array_size
-            );
-        }
-
-        let mut data = Vec::new();
-        let mut bytes_read = 2; // Account for msg_id that was already read
-
-        // Track if this message has trailing padding
-        let has_trailing_padding = format
-            .fields
-            .last()
-            .map(|f| f.field_name.starts_with("_padding"))
-            .unwrap_or(false);
-
-        for (i, field) in format.fields.iter().enumerate() {
-            // Skip trailing padding field
-            if has_trailing_padding
-                && i == format.fields.len() - 1
-                && field.field_name.starts_with("_padding")
-            {
-                println!("Skipping trailing padding field: {}", field.field_name);
-                continue;
-            }
-
-            // Handle padding fields
-            if field.field_name.starts_with("_padding") {
-                let padding_size = if let Some(size) = field.array_size {
-                    size
-                } else {
-                    // For non-array padding, use the base type size
-                    match field.field_type.as_str() {
-                        "uint8_t" => 1,
-                        "uint16_t" => 2,
-                        "uint32_t" => 4,
-                        "uint64_t" => 8,
-                        _ => 1, // Default to 1 byte if unknown
-                    }
-                };
-
-                // Skip the padding bytes
-                let mut padding = vec![0u8; padding_size];
-                self.reader.read_exact(&mut padding)?;
-                bytes_read += padding_size;
-
-                println!(
-                    "Read and skipped padding field: {} (size: {})",
-                    field.field_name, padding_size
-                );
-                continue;
-            }
-
-            // Parse the field type
-            let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
-
-            // Read the value based on type
-            let value = match type_info {
+            let (value, bytes) = match type_info {
                 ULogType::Basic(value_type) => {
-                    let val = self.read_typed_value(&value_type, array_size)?;
-                    // Update bytes_read based on the value type
-                    bytes_read += match &val {
+                    let value = self.read_typed_value(&value_type, array_size)?;
+                    let bytes = match &value {
                         ULogValue::BoolArray(v) => v.len(),
                         ULogValue::CharArray(s) => s.len(),
                         ULogValue::DoubleArray(v) => v.len() * 8,
@@ -723,49 +635,136 @@ impl<R: Read> ULogParser<R> {
                         ULogValue::Int32Array(v) => v.len() * 4,
                         ULogValue::Int64(_) | ULogValue::UInt64(_) | ULogValue::Double(_) => 8,
                         ULogValue::Int64Array(v) => v.len() * 8,
-                        ULogValue::Int8(_)
-                        | ULogValue::UInt8(_)
-                        | ULogValue::Bool(_)
-                        | ULogValue::Char(_) => 1,
+                        ULogValue::Int8(_) | ULogValue::UInt8(_) | ULogValue::Bool(_) | ULogValue::Char(_) => 1,
                         ULogValue::Int8Array(v) => v.len(),
-                        ULogValue::Message(_) => 0, // Handle nested message size separately
-                        ULogValue::MessageArray(_) => 0,
-                        ULogValue::UInt16Array(vec) => vec.len() * 2,
-                        ULogValue::UInt32Array(vec) => vec.len() * 4,
-                        ULogValue::UInt64Array(vec) => vec.len() * 8,
                         ULogValue::UInt8Array(v) => v.len(),
+                        ULogValue::UInt16Array(v) => v.len() * 2,
+                        ULogValue::UInt32Array(v) => v.len() * 4,
+                        ULogValue::UInt64Array(v) => v.len() * 8,
+                        _ => 0, // Should never happen for basic types
                     };
-                    val
+                    (value, bytes)
                 }
                 ULogType::Message(msg_type) => {
-                    // Look up the nested message format
-                    let nested_format = self
-                        .formats
-                        .get(&msg_type)
-                        .ok_or_else(|| {
-                            ULogError::ParseError(format!("Unknown message type: {}", msg_type))
-                        })?
+                    let nested_format = self.formats.get(&msg_type)
+                        .ok_or_else(|| ULogError::ParseError(format!("Unknown message type: {}", msg_type)))?
                         .clone();
 
                     if let Some(size) = array_size {
-                        // Handle array of nested messages
                         let mut array_values = Vec::with_capacity(size);
+                        let mut array_bytes = 0;
                         for _ in 0..size {
-                            let nested_data = self.read_nested_message(&nested_format)?;
-                            bytes_read += nested_data.len(); // Assuming read_nested_message returns Vec<ULogValue>
-                            array_values.push(nested_data);
+                            let result = self.read_nested_message(&nested_format)?;
+                            array_bytes += result.bytes_read;
+                            array_values.push(result.data);
                         }
-                        ULogValue::MessageArray(array_values)
+                        (ULogValue::MessageArray(array_values), array_bytes)
                     } else {
-                        // Handle single nested message
-                        let nested_data = self.read_nested_message(&nested_format)?;
-                        bytes_read += nested_data.len(); // Assuming read_nested_message returns Vec<ULogValue>
-                        ULogValue::Message(nested_data)
+                        let result = self.read_nested_message(&nested_format)?;
+                        (ULogValue::Message(result.data), result.bytes_read)
                     }
                 }
             };
 
-            println!("Read field: {} = {:?}", field.field_name, value);
+            total_bytes_read += bytes;
+            nested_data.push(value);
+        }
+
+        Ok(NestedMessageResult {
+            data: nested_data,
+            bytes_read: total_bytes_read,
+        })
+    }
+
+
+    pub fn read_data_message(
+        &mut self,
+        msg_id: u16,
+        msg_size: u16,
+        format: &FormatMessage,
+    ) -> Result<DataMessage, ULogError> {
+        let mut data = Vec::new();
+        let mut bytes_read = 2; // Account for msg_id that was already read
+
+        let has_trailing_padding = format
+            .fields
+            .last()
+            .map(|f| f.field_name.starts_with("_padding"))
+            .unwrap_or(false);
+
+        for (i, field) in format.fields.iter().enumerate() {
+            // Skip trailing padding field
+            if has_trailing_padding && i == format.fields.len() - 1 && field.field_name.starts_with("_padding") {
+                continue;
+            }
+
+            // Handle padding fields
+            if field.field_name.starts_with("_padding") {
+                let padding_size = if let Some(size) = field.array_size {
+                    size
+                } else {
+                    match field.field_type.as_str() {
+                        "uint8_t" => 1,
+                        "uint16_t" => 2,
+                        "uint32_t" => 4,
+                        "uint64_t" => 8,
+                        _ => 1,
+                    }
+                };
+                let mut padding = vec![0u8; padding_size];
+                self.reader.read_exact(&mut padding)?;
+                bytes_read += padding_size;
+                continue;
+            }
+
+            let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
+
+            let (value, field_bytes) = match type_info {
+                ULogType::Basic(value_type) => {
+                    let value = self.read_typed_value(&value_type, array_size)?;
+                    let bytes = match &value {
+                        ULogValue::BoolArray(v) => v.len(),
+                        ULogValue::CharArray(s) => s.len(),
+                        ULogValue::DoubleArray(v) => v.len() * 8,
+                        ULogValue::FloatArray(v) => v.len() * 4,
+                        ULogValue::Int16(_) | ULogValue::UInt16(_) => 2,
+                        ULogValue::Int16Array(v) => v.len() * 2,
+                        ULogValue::Int32(_) | ULogValue::UInt32(_) | ULogValue::Float(_) => 4,
+                        ULogValue::Int32Array(v) => v.len() * 4,
+                        ULogValue::Int64(_) | ULogValue::UInt64(_) | ULogValue::Double(_) => 8,
+                        ULogValue::Int64Array(v) => v.len() * 8,
+                        ULogValue::Int8(_) | ULogValue::UInt8(_) | ULogValue::Bool(_) | ULogValue::Char(_) => 1,
+                        ULogValue::Int8Array(v) => v.len(),
+                        ULogValue::UInt8Array(v) => v.len(),
+                        ULogValue::UInt16Array(v) => v.len() * 2,
+                        ULogValue::UInt32Array(v) => v.len() * 4,
+                        ULogValue::UInt64Array(v) => v.len() * 8,
+                        _ => 0,
+                    };
+                    (value, bytes)
+                }
+                ULogType::Message(msg_type) => {
+                    let nested_format = self.formats.get(&msg_type)
+                        .ok_or_else(|| ULogError::ParseError(format!("Unknown message type: {}", msg_type)))?
+                        .clone();
+
+                    if let Some(size) = array_size {
+                        let mut array_values = Vec::with_capacity(size);
+                        let mut total_bytes = 0;
+                        for _ in 0..size {
+                            let result = self.read_nested_message(&nested_format)?;
+                            total_bytes += result.bytes_read;
+                            array_values.push(result.data);
+                        }
+                        (ULogValue::MessageArray(array_values), total_bytes)
+                    } else {
+                        let result = self.read_nested_message(&nested_format)?;
+                        (ULogValue::Message(result.data), result.bytes_read)
+                    }
+                }
+            };
+
+            bytes_read += field_bytes;
             data.push(value);
         }
 
@@ -782,7 +781,7 @@ impl<R: Read> ULogParser<R> {
             )));
         }
 
-        let dm = DataMessage {
+        Ok(DataMessage {
             msg_id,
             time_us: if let Some(ULogValue::UInt64(ts)) = data.first() {
                 *ts
@@ -790,9 +789,7 @@ impl<R: Read> ULogParser<R> {
                 0
             },
             data,
-        };
-
-        Ok(dm)
+        })
     }
 
     pub fn parse_data(&mut self) -> Result<(), ULogError> {
