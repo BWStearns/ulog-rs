@@ -16,7 +16,6 @@ use logged_message::LoggedMessage;
 use multi_message::MultiMessage;
 use parameter_message::{DefaultParameterMessage, ParameterMessage};
 use std::collections::HashMap;
-use std::fs::File;
 use std::io::{self, Read};
 use subscription_message::SubscriptionMessage;
 use tagged_logged_message::*;
@@ -26,9 +25,66 @@ use thiserror::Error;
 const MAX_MESSAGE_SIZE: u16 = 65535;
 
 #[derive(Debug, Clone, PartialEq)]
+/// Represents the type of a ULog value, which can be either a basic type or a nested message type.
+///
+/// The `ULogType` enum is used to represent the type of a ULog value. It can either be a `Basic` type,
+/// which corresponds to a primitive data type, or a `Message` type, which represents a nested message
+/// within the ULog file.
 pub enum ULogType {
     Basic(ULogValueType),
     Message(String), // For nested message types
+}
+
+// Define the possible C types that can appear in info messages
+#[derive(Debug, Clone, PartialEq)]
+/// The possible C types that can appear in info messages.
+/// This enum represents the different data types that can be used in ULog messages.
+pub enum ULogValueType {
+    Int8,
+    UInt8,
+    Int16,
+    UInt16,
+    Int32,
+    UInt32,
+    Int64,
+    UInt64,
+    Float,
+    Double,
+    Bool,
+    Char,
+}
+
+#[derive(Debug, Clone)]
+/// An enum representing the different data types that can be used in ULog messages.
+/// This enum provides variants for various primitive types as well as arrays and nested message types.
+pub enum ULogValue {
+    Int8(i8),
+    UInt8(u8),
+    Int16(i16),
+    UInt16(u16),
+    Int32(i32),
+    UInt32(u32),
+    Int64(i64),
+    UInt64(u64),
+    Float(f32),
+    Double(f64),
+    Bool(bool),
+    Char(char),
+    // Array variants
+    Int8Array(Vec<i8>),
+    UInt8Array(Vec<u8>),
+    Int16Array(Vec<i16>),
+    UInt16Array(Vec<u16>),
+    Int32Array(Vec<i32>),
+    UInt32Array(Vec<u32>),
+    Int64Array(Vec<i64>),
+    UInt64Array(Vec<u64>),
+    FloatArray(Vec<f32>),
+    DoubleArray(Vec<f64>),
+    BoolArray(Vec<bool>),
+    CharArray(String),                 // Special case: char arrays are strings
+    Message(Vec<ULogValue>),           // For nested message types
+    MessageArray(Vec<Vec<ULogValue>>), // For arrays of nested message types
 }
 
 #[derive(Debug, Error)]
@@ -52,6 +108,12 @@ pub enum ULogError {
 }
 // File header (16 bytes)
 #[derive(Debug)]
+/// A header for a ULog file, containing the version and timestamp.
+///
+/// The `ULogHeader` struct represents the header of a ULog file, which includes
+/// the version of the ULog format (`version`) and the timestamp of when the
+/// ULog file was created (`timestamp`). This header is used to parse the
+/// binary data of a ULog file.
 pub struct ULogHeader {
     pub version: u8,
     pub timestamp: u64,
@@ -59,12 +121,22 @@ pub struct ULogHeader {
 
 // Message header (3 bytes)
 #[derive(Debug)]
+
+/// A header for a ULog message, containing the message size and type.
+///
+/// The `MessageHeader` struct represents the header of a ULog message, which includes
+/// the size of the message in bytes (`msg_size`) and the type of the message (`msg_type`).
+/// This header is used to parse the binary data of a ULog file.
 pub struct MessageHeader {
     pub msg_size: u16,
     pub msg_type: u8,
 }
 
 #[derive(Debug)]
+/// A message containing compatibility and incompatibility flags, as well as appended offsets.
+/// The `compat_flags` and `incompat_flags` fields are arrays of 8 bytes each, representing
+/// compatibility and incompatibility flags for the ULog file. The `appended_offsets` field
+/// is an array of 3 `u64` values representing offsets of appended data in the ULog file.
 pub struct FlagBitsMessage {
     pub compat_flags: [u8; 8],
     pub incompat_flags: [u8; 8],
@@ -72,6 +144,14 @@ pub struct FlagBitsMessage {
 }
 
 #[derive(Debug)]
+/// A parser for ULog binary data.
+///
+/// The `ULogParser` struct is responsible for parsing the binary data of a ULog file.
+/// It provides methods to access the various components of the ULog data, such as the
+/// header, format messages, subscriptions, logged messages, and parameter messages.
+///
+/// The parser is generic over the `Read` trait, allowing it to work with different
+/// types of input sources, such as files, network streams, or in-memory buffers.
 pub struct ULogParser<R: Read> {
     reader: R,
     _current_timestamp: u64,
@@ -307,6 +387,11 @@ impl<R: Read> ULogParser<R> {
         is_valid
     }
 
+    /// Parses the definitions section of the ULog file until the data section is reached.
+    /// This method reads the flag bits message first, then iterates through the definition
+    /// section, handling various message types such as info messages, format messages,
+    /// initial parameters, and multi messages. Once the first subscription message is
+    /// encountered, the method breaks out of the loop to continue parsing the data section.
     pub fn parse_definitions(&mut self) -> Result<(), ULogError> {
         // Read flag bits message first
         let header = self.read_message_header()?;
@@ -342,6 +427,12 @@ impl<R: Read> ULogParser<R> {
         Ok(())
     }
 
+    /// Parses the data section of the ULog file, handling various message types such as
+    /// subscription messages, info messages, multi messages, logged messages, data messages,
+    /// parameter changes, and dropouts. The method reads the message headers and dispatches
+    /// to the appropriate handler for each message type. If an unknown message type is
+    /// encountered, the message is skipped. The method continues parsing the data section
+    /// until the end of the file is reached.
     pub fn parse_data(&mut self) -> Result<(), ULogError> {
         loop {
             match self.read_message_header() {
@@ -389,6 +480,11 @@ impl<R: Read> ULogParser<R> {
     }
 
     #[allow(dead_code)]
+    /// Main method to create a new `ULogParser` instance.
+    ///
+    /// This function creates a new `ULogParser` instance, parses the definitions,
+    /// and then parses the data from the reader. If any errors occur during the
+    /// parsing process, they are returned as a `ULogError`.
     pub fn parse_reader(reader: R) -> Result<ULogParser<R>, ULogError> {
         let mut parser = ULogParser::new(reader)?;
         parser.parse_definitions()?;

@@ -1,8 +1,8 @@
 use std::{collections::HashMap, io::Read};
 
-use byteorder::{LittleEndian, ReadBytesExt};
+use byteorder::ReadBytesExt;
 
-use crate::{MessageHeader, ULogError, ULogParser, ULogType};
+use crate::{MessageHeader, ULogError, ULogParser, ULogType, ULogValue, ULogValueType};
 
 // Format message field
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -112,55 +112,6 @@ impl InfoMessage {
     pub fn raw_value(&self) -> &ULogValue {
         &self.value
     }
-}
-
-// Define the possible C types that can appear in info messages
-#[derive(Debug, Clone, PartialEq)]
-pub enum ULogValueType {
-    Int8,
-    UInt8,
-    Int16,
-    UInt16,
-    Int32,
-    UInt32,
-    Int64,
-    UInt64,
-    Float,
-    Double,
-    Bool,
-    Char,
-}
-
-// The actual value stored in an info message
-#[derive(Debug, Clone)]
-pub enum ULogValue {
-    Int8(i8),
-    UInt8(u8),
-    Int16(i16),
-    UInt16(u16),
-    Int32(i32),
-    UInt32(u32),
-    Int64(i64),
-    UInt64(u64),
-    Float(f32),
-    Double(f64),
-    Bool(bool),
-    Char(char),
-    // Array variants
-    Int8Array(Vec<i8>),
-    UInt8Array(Vec<u8>),
-    Int16Array(Vec<i16>),
-    UInt16Array(Vec<u16>),
-    Int32Array(Vec<i32>),
-    UInt32Array(Vec<u32>),
-    Int64Array(Vec<i64>),
-    UInt64Array(Vec<u64>),
-    FloatArray(Vec<f32>),
-    DoubleArray(Vec<f64>),
-    BoolArray(Vec<bool>),
-    CharArray(String),                 // Special case: char arrays are strings
-    Message(Vec<ULogValue>),           // For nested message types
-    MessageArray(Vec<Vec<ULogValue>>), // For arrays of nested message types
 }
 
 impl<R: Read> ULogParser<R> {

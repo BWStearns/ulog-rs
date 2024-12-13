@@ -1,7 +1,5 @@
 use std::{collections::HashMap, io::Read};
 
-use byteorder::{LittleEndian, ReadBytesExt};
-
 use crate::{Field, MessageHeader, ULogError, ULogParser};
 
 #[derive(Debug, Clone)]

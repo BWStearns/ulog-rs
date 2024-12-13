@@ -1,6 +1,6 @@
 use std::{collections::HashMap, io::Read};
 
-use byteorder::{LittleEndian, ReadBytesExt};
+use byteorder::ReadBytesExt;
 
 use crate::{MessageHeader, ULogError, ULogParser, ULogType, ULogValue, ULogValueType};
 

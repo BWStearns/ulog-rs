@@ -6,12 +6,17 @@ use crate::{
     format_message::FormatMessage, MessageHeader, ULogError, ULogParser, ULogType, ULogValue,
 };
 
+/// A struct representing the result of parsing a nested message in a ULog data message.
+/// The `data` field contains the parsed ULog values, and `bytes_read` indicates the number of bytes consumed.
 struct NestedMessageResult {
     data: Vec<ULogValue>,
     bytes_read: usize,
 }
 
 #[derive(Debug)]
+/// A struct representing a data message in a ULog file.
+/// The `msg_id` field contains the message ID, `time_us` contains the timestamp in microseconds,
+/// and `data` contains the parsed ULog values for the message.
 pub struct DataMessage {
     msg_id: u16,
     time_us: u64,
@@ -19,6 +24,19 @@ pub struct DataMessage {
 }
 
 impl<R: Read> ULogParser<R> {
+    /// Reads a data message from the ULog file and returns a `DataMessage` struct containing the parsed data.
+    ///
+    /// This function takes the message ID, message size, and the format of the message as input. It then reads the message data, parsing the values according to the specified format, and returns a `DataMessage` struct containing the parsed data.
+    ///
+    /// The function handles padding fields, nested messages, and any remaining bytes in the message. It also updates the current timestamp if a new timestamp value is present in the message data.
+    ///
+    /// # Arguments
+    /// * `msg_id` - The ID of the message to be read.
+    /// * `msg_size` - The size of the message in bytes.
+    /// * `format` - The format of the message, as a `FormatMessage` struct.
+    ///
+    /// # Returns
+    /// A `Result` containing a `DataMessage` struct with the parsed data, or a `ULogError` if there was an error parsing the message.
     pub fn read_data_message(
         &mut self,
         msg_id: u16,
@@ -167,6 +185,11 @@ impl<R: Read> ULogParser<R> {
         Ok(())
     }
 
+    /// Reads a nested message from the ULog data stream.
+    ///
+    /// This function reads a nested message from the ULog data stream, based on the provided `FormatMessage` structure.
+    /// It recursively reads the nested fields, handling both basic types and nested message types.
+    /// The function returns a `NestedMessageResult` containing the read data and the total number of bytes read.
     fn read_nested_message(
         &mut self,
         format: &FormatMessage,
