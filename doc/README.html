@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>Rust ULog Parser</title>
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+    <h1 class="title">Rust ULog Parser</h1>
+    <nav id="rustdoc"><ul>
+<li><a href="#features" title="Features">0.1 Features</a><ul></ul></li>
+<li><a href="#usage" title="Usage">0.2 Usage</a><ul>
+<li><a href="#basic-example" title="Basic Example">0.2.1 Basic Example</a><ul></ul></li></ul></li>
+<li><a href="#project-structure" title="Project Structure">0.3 Project Structure</a><ul></ul></li>
+<li><a href="#api-overview" title="API Overview">0.4 API Overview</a><ul>
+<li><a href="#main-parser-interface" title="Main Parser Interface">0.4.1 Main Parser Interface</a><ul></ul></li>
+<li><a href="#error-handling" title="Error Handling">0.4.2 Error Handling</a><ul></ul></li></ul></li>
+<li><a href="#message-types" title="Message Types">0.5 Message Types</a><ul>
+<li><a href="#data-messages" title="Data Messages">0.5.1 Data Messages</a><ul></ul></li>
+<li><a href="#parameter-messages" title="Parameter Messages">0.5.2 Parameter Messages</a><ul></ul></li>
+<li><a href="#logged-messages" title="Logged Messages">0.5.3 Logged Messages</a><ul></ul></li></ul></li>
+<li><a href="#contributing" title="Contributing">0.6 Contributing</a><ul></ul></li>
+<li><a href="#license" title="License">0.7 License</a><ul></ul></li></ul></nav><p>A robust Rust implementation of a parser for the ULog file format, commonly used in PX4 flight stack for logging system data. This parser provides a safe, efficient way to read and process ULog files with strong type checking and error handling.</p>
+<h2 id="features"><a class="doc-anchor" href="#features">§</a>0.1 Features</h2>
+<ul>
+<li>Complete implementation of the ULog file format specification</li>
+<li>Support for all ULog message types including:
+<ul>
+<li>Data messages</li>
+<li>Format messages</li>
+<li>Parameter messages</li>
+<li>Logged messages (both plain and tagged)</li>
+<li>Multi messages</li>
+<li>Subscription messages</li>
+<li>Dropout tracking</li>
+</ul>
+</li>
+<li>Safe handling of nested message types</li>
+<li>Comprehensive error handling</li>
+<li>Zero-copy parsing where possible</li>
+<li>Support for appended data sections</li>
+</ul>
+<h2 id="usage"><a class="doc-anchor" href="#usage">§</a>0.2 Usage</h2>
+<p>Add this to your <code>Cargo.toml</code>:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+ulog_parser = &quot;0.1.0&quot;</code></pre></div><h3 id="basic-example"><a class="doc-anchor" href="#basic-example">§</a>0.2.1 Basic Example</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs::File;
+<span class="kw">use </span>ulog_parser::ULogParser;
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+    <span class="comment">// Open a ULog file
+    </span><span class="kw">let </span>file = File::open(<span class="string">"sample.ulg"</span>)<span class="question-mark">?</span>;
+    
+    <span class="comment">// Create parser instance
+    </span><span class="kw">let </span>parser = ULogParser::parse_reader(file)<span class="question-mark">?</span>;
+    
+    <span class="comment">// Access header information
+    </span><span class="macro">println!</span>(<span class="string">"ULog Header:"</span>);
+    <span class="macro">println!</span>(<span class="string">"  Version: {}"</span>, parser.header().version);
+    <span class="macro">println!</span>(<span class="string">"  Timestamp: {} μs"</span>, parser.header().timestamp);
+    <span class="macro">println!</span>(<span class="string">"  Final Timestamp: {} μs"</span>, parser.last_timestamp());
+    
+    <span class="comment">// Access logged messages
+    </span><span class="kw">for </span>message <span class="kw">in </span>parser.logged_messages() {
+        <span class="macro">println!</span>(<span class="string">"[{}] {}"</span>, ULogParser::log_level_to_string(message.log_level), message.message);
+    }
+    
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h2 id="project-structure"><a class="doc-anchor" href="#project-structure">§</a>0.3 Project Structure</h2>
+<p>The project is organized into several modules, each handling specific aspects of ULog parsing:</p>
+<ul>
+<li><code>lib.rs</code>: Core parser implementation and type definitions</li>
+<li><code>data_message.rs</code>: Handles data message parsing</li>
+<li><code>dropout_message.rs</code>: Manages dropout tracking and statistics</li>
+<li><code>format_message.rs</code>: Processes message format definitions</li>
+<li><code>info_message.rs</code>: Handles info message parsing</li>
+<li><code>logged_message.rs</code>: Manages regular logged messages</li>
+<li><code>multi_message.rs</code>: Handles multi-part messages</li>
+<li><code>parameter_message.rs</code>: Processes parameter messages</li>
+<li><code>subscription_message.rs</code>: Manages message subscriptions</li>
+<li><code>tagged_logged_message.rs</code>: Handles tagged log messages</li>
+</ul>
+<h2 id="api-overview"><a class="doc-anchor" href="#api-overview">§</a>0.4 API Overview</h2><h3 id="main-parser-interface"><a class="doc-anchor" href="#main-parser-interface">§</a>0.4.1 Main Parser Interface</h3>
+<p>The <code>ULogParser</code> struct provides the main interface for parsing ULog files:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">pub struct </span>ULogParser&lt;R: Read&gt; {
+    <span class="comment">// ... internal fields ...
+</span>}
+
+<span class="kw">impl</span>&lt;R: Read&gt; ULogParser&lt;R&gt; {
+    <span class="comment">// Create a new parser and parse the entire file
+    </span><span class="kw">pub fn </span>parse_reader(reader: R) -&gt; <span class="prelude-ty">Result</span>&lt;ULogParser&lt;R&gt;, ULogError&gt;;
+    
+    <span class="comment">// Access various components
+    </span><span class="kw">pub fn </span>header(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ULogHeader;
+    <span class="kw">pub fn </span>formats(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;String, FormatMessage&gt;;
+    <span class="kw">pub fn </span>subscriptions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;u16, SubscriptionMessage&gt;;
+    <span class="kw">pub fn </span>logged_messages(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[LoggedMessage];
+    <span class="kw">pub fn </span>info_messages(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;String, InfoMessage&gt;;
+    <span class="kw">pub fn </span>initial_params(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;String, ParameterMessage&gt;;
+    <span class="kw">pub fn </span>multi_messages(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;String, Vec&lt;MultiMessage&gt;&gt;;
+    <span class="kw">pub fn </span>default_params(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;String, DefaultParameterMessage&gt;;
+    <span class="kw">pub fn </span>dropout_details(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>DropoutStats;
+    <span class="kw">pub fn </span>last_timestamp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64;
+}</code></pre></div>
+<h3 id="error-handling"><a class="doc-anchor" href="#error-handling">§</a>0.4.2 Error Handling</h3>
+<p>The parser uses a custom error type <code>ULogError</code> for comprehensive error handling:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">pub enum </span>ULogError {
+    Io(std::io::Error),
+    InvalidMagic,
+    UnsupportedVersion(u8),
+    InvalidMessageType(u8),
+    InvalidString,
+    InvalidTypeName(String),
+    ParseError(String),
+    IncompatibleFlags(Vec&lt;u8&gt;),
+}</code></pre></div>
+<h2 id="message-types"><a class="doc-anchor" href="#message-types">§</a>0.5 Message Types</h2><h3 id="data-messages"><a class="doc-anchor" href="#data-messages">§</a>0.5.1 Data Messages</h3>
+<p>Data messages contain the actual logged data and are accessed through subscriptions:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Subscribe to a message type
+</span><span class="kw">let </span>subscription = parser.subscriptions().get(<span class="kw-2">&amp;</span>msg_id)<span class="question-mark">?</span>;
+
+<span class="comment">// Access the data
+</span><span class="kw">for </span>data_point <span class="kw">in </span><span class="kw-2">&amp;</span>subscription.data {
+    <span class="comment">// Process data...
+</span>}</code></pre></div>
+<h3 id="parameter-messages"><a class="doc-anchor" href="#parameter-messages">§</a>0.5.2 Parameter Messages</h3>
+<p>The parser maintains both initial parameters and parameter changes:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Access initial parameters
+</span><span class="kw">for </span>(key, param) <span class="kw">in </span>parser.initial_params() {
+    <span class="macro">println!</span>(<span class="string">"{}: {:?}"</span>, key, param.value);
+}
+
+<span class="comment">// Access default parameters
+</span><span class="kw">for </span>(key, param) <span class="kw">in </span>parser.default_params() {
+    <span class="macro">println!</span>(<span class="string">"{}: {:?}"</span>, key, param.value);
+}</code></pre></div>
+<h3 id="logged-messages"><a class="doc-anchor" href="#logged-messages">§</a>0.5.3 Logged Messages</h3>
+<p>Both regular and tagged logged messages are supported:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Regular logged messages
+</span><span class="kw">for </span>msg <span class="kw">in </span>parser.logged_messages() {
+    <span class="macro">println!</span>(<span class="string">"[{}] {}"</span>, msg.timestamp, msg.message);
+}
+
+<span class="comment">// Tagged logged messages
+</span><span class="kw">for </span>(tag, messages) <span class="kw">in </span>parser.logged_messages_tagged() {
+    <span class="kw">for </span>msg <span class="kw">in </span>messages {
+        <span class="macro">println!</span>(<span class="string">"[{}][{}] {}"</span>, tag, msg.timestamp, msg.message);
+    }
+}</code></pre></div>
+<h2 id="contributing"><a class="doc-anchor" href="#contributing">§</a>0.6 Contributing</h2>
+<p>Contributions are welcome! Please feel free to submit a Pull Request.</p>
+<h2 id="license"><a class="doc-anchor" href="#license">§</a>0.7 License</h2>
+<p>[Insert your chosen license here]</p>
+
+    
+</body>
+</html>

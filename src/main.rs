@@ -7,15 +7,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get the file path from the home directory
     let home = dirs::home_dir().expect("Could not find home directory");
     let file_path = home.join("Downloads").join("sample-small.ulg");
-
-    println!("Opening ULog file: {}", file_path.display());
-
     // Open the file
     let file = File::open(&file_path)?;
-
     // Create parser instance
-    let mut parser = ulog_parser::ULogParser::parse_reader(file)?;
-
+    let parser = ulog_parser::ULogParser::parse_reader(file)?;
     // Print header information
     println!("ULog Header:");
     println!("  Version: {}", parser.header().version);
