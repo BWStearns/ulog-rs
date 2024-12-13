@@ -24,14 +24,14 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-ulog_parser = "0.1.0"
+ulog_rs = "0.1.0"
 ```
 
 ### Basic Example
 
 ```rust
 use std::fs::File;
-use ulog_parser::ULogParser;
+use ulog_rs::ULogParser;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Open a ULog file
@@ -48,7 +48,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // Access logged messages
     for message in parser.logged_messages() {
-        println!("[{}] {}", ULogParser::log_level_to_string(message.log_level), message.message);
+        println!("[{}] {}", message.timestamp, message.message);
     }
     
     Ok(())

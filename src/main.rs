@@ -1,8 +1,6 @@
 use std::fs::File;
 // use std::path::Path;
 
-use ulog_parser::ULogParser;
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get the file path from the home directory
     let home = dirs::home_dir().expect("Could not find home directory");
@@ -10,12 +8,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Open the file
     let file = File::open(&file_path)?;
     // Create parser instance
-    let parser = ulog_parser::ULogParser::parse_reader(file)?;
+    let parser = ulog_rs::ULogParser::parse_reader(file)?;
     // Print header information
     println!("ULog Header:");
     println!("  Version: {}", parser.header().version);
     println!("  Timestamp: {} μs", parser.header().timestamp);
     println!("  Final Timestamp: {} μs", parser.last_timestamp());
+    for message in parser.logged_messages() {
+        println!("[{}] {}", message.timestamp, message.message);
+    }
 
     // Parse definition section
     // Join the initial params into a single string
