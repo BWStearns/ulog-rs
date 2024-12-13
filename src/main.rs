@@ -15,6 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for message in parser.logged_messages() {
         println!("[{}] {}", message.timestamp, message.message);
     }
+    println!(":{:?}:", parser.formats());
 
     println!("\n\n######################\n\n");
 

@@ -4,7 +4,7 @@ use serde_json::json;
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
-use ulog_rs::{ULogParser, ULogValue};
+use ulog_rs::{parameter_message::DefaultType, ULogParser, ULogValue};
 
 #[derive(Serialize)]
 struct Profile {
@@ -12,7 +12,7 @@ struct Profile {
     datasets: HashMap<String, HashMap<String, usize>>,
     logged_messages: Vec<LoggedMessageProfile>,
     info_messages: HashMap<String, String>,
-    default_params: HashMap<String, ParamValue>,
+    default_params: HashMap<String, HashMap<String, ParamValue>>, // Group -> Params
     initial_params: HashMap<String, ParamValue>,
     changed_params: HashMap<String, Vec<ParamValue>>,
     dropout_details: Vec<DropoutProfile>,
@@ -31,11 +31,8 @@ struct DropoutProfile {
     duration: u16,
 }
 
-#[derive(Serialize)]
-enum ParamValue {
-    Float(f32),
-    Int(i32),
-}
+// Use serde_json::Value to match Python's flexibility with numeric types
+type ParamValue = serde_json::Value;
 
 pub fn profile_ulog<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::Error>> {
     let file = File::open(path.as_ref())?;
@@ -61,11 +58,27 @@ pub fn profile_ulog<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::E
 
     // Process subscriptions (datasets)
     for (msg_id, subscription) in parser.subscriptions() {
-        let topic_counts =
-            HashMap::from_iter([(subscription.message_name.clone(), subscription.data.len())]);
+        let mut field_counts = HashMap::new();
+        for field in &subscription.format.fields {
+            if field.field_name.starts_with("_padding") {
+                continue;
+            }
+
+            let field_name = if let Some(array_size) = field.array_size {
+                if field.field_name.contains('[') {
+                    field.field_name.clone()
+                } else {
+                    format!("{}[{}]", field.field_name, array_size - 1)
+                }
+            } else {
+                field.field_name.clone()
+            };
+
+            field_counts.insert(field_name, subscription.data.len());
+        }
         profile
             .datasets
-            .insert(subscription.message_name.clone(), topic_counts);
+            .insert(subscription.message_name.clone(), field_counts);
     }
 
     // Process logged messages
@@ -89,34 +102,48 @@ pub fn profile_ulog<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::E
     // Process parameters
     for (key, param) in parser.initial_params() {
         let value = match &param.value {
-            ULogValue::Float(f) => ParamValue::Float(*f),
-            ULogValue::Int32(i) => ParamValue::Int(*i),
+            ULogValue::Float(f) => json!(f),
+            ULogValue::Int32(i) => json!(i),
             _ => continue,
         };
         profile.initial_params.insert(key.clone(), value);
     }
 
-    // Process default parameters
-    for (key, param) in parser.default_params() {
-        let value = match &param.value {
-            ULogValue::Float(f) => ParamValue::Float(*f),
-            ULogValue::Int32(i) => ParamValue::Int(*i),
-            _ => continue,
-        };
-        profile.default_params.insert(key.clone(), value);
+    // Process default parameters with group support
+    // Group 0 and 1 match Python implementation
+    let default_groups = [0, 1];
+    for group in default_groups {
+        let mut group_params = HashMap::new();
+        for (key, param) in parser.default_params() {
+            if param.default_types.contains(&DefaultType::SystemWide) && group == 0
+                || param.default_types.contains(&DefaultType::Configuration) && group == 1
+            {
+                let value = match &param.value {
+                    ULogValue::Float(f) => json!(f),
+                    ULogValue::Int32(i) => json!(i),
+                    _ => continue,
+                };
+                group_params.insert(key.clone(), value);
+            }
+        }
+        profile
+            .default_params
+            .insert(group.to_string(), group_params);
     }
 
     // Process changed parameters
     for (key, params) in parser.changed_params() {
-        let values = params
+        let values: Vec<serde_json::Value> = params
             .iter()
-            .map(|param| match &param.value {
-                ULogValue::Float(f) => ParamValue::Float(*f),
-                ULogValue::Int32(i) => ParamValue::Int(*i),
-                _ => unreachable!(),
+            .filter_map(|param| match &param.value {
+                ULogValue::Float(f) => Some(json!(f)),
+                ULogValue::Int32(i) => Some(json!(i)),
+                _ => None,
             })
             .collect();
-        profile.changed_params.insert(key.clone(), values);
+        if !values.is_empty() {
+            profile.changed_params.insert(key.clone(), values);
+        }
     }
 
     // Process dropouts
