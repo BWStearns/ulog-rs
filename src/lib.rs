@@ -442,12 +442,6 @@ impl<R: Read> ULogParser<R> {
                     self.handle_subscription_message(&header)?;
                     break;
                 }
-                b'D' => {
-                    log::debug!("Found Data message before subscription!");
-                    return Err(ULogError::ParseError(
-                        "Data message found before subscription".to_string(),
-                    ));
-                }
                 _ => {
                     log::debug!("Unknown message type: {}", header.msg_type as char);
                     // Before skipping, let's dump the next few bytes to see what's going on
