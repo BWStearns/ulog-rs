@@ -54,6 +54,10 @@ impl<R: Read> ULogParser<R> {
         &self.default_params
     }
 
+    pub fn changed_params(&self) -> &HashMap<String, Vec<ParameterMessage>> {
+        &self.changed_params
+    }
+
     fn read_param_message(&mut self, _msg_size: u16) -> Result<ParameterMessage, ULogError> {
         let key_len: usize = self.reader.read_u8()? as usize;
         let key_str = self.read_string(key_len)?;

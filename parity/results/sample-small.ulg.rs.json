@@ -1,0 +1,3685 @@
+{
+  "file": "sample-small.ulg",
+  "datasets": {
+    "estimator_selector_status": {
+      "estimator_selector_status": 20
+    },
+    "sensor_combined": {
+      "sensor_combined": 3627
+    },
+    "vehicle_control_mode": {
+      "vehicle_control_mode": 38
+    },
+    "control_allocator_status": {
+      "control_allocator_status": 0
+    },
+    "sensor_gps": {
+      "sensor_gps": 18
+    },
+    "failure_detector_status": {
+      "failure_detector_status": 38
+    },
+    "actuator_outputs": {
+      "actuator_outputs": 0
+    },
+    "action_request": {
+      "action_request": 2
+    },
+    "home_position": {
+      "home_position": 4
+    },
+    "parameter_update": {
+      "parameter_update": 1
+    },
+    "estimator_event_flags": {
+      "estimator_event_flags": 18
+    },
+    "estimator_global_position": {
+      "estimator_global_position": 18
+    },
+    "rate_ctrl_status": {
+      "rate_ctrl_status": 93
+    },
+    "vehicle_magnetometer": {
+      "vehicle_magnetometer": 36
+    },
+    "vehicle_local_position_setpoint": {
+      "vehicle_local_position_setpoint": 185
+    },
+    "estimator_baro_bias": {
+      "estimator_baro_bias": 36
+    },
+    "vehicle_command_ack": {
+      "vehicle_command_ack": 1
+    },
+    "vehicle_attitude": {
+      "vehicle_attitude": 368
+    },
+    "estimator_gps_status": {
+      "estimator_gps_status": 18
+    },
+    "rtl_time_estimate": {
+      "rtl_time_estimate": 18
+    },
+    "estimator_sensor_bias": {
+      "estimator_sensor_bias": 63
+    },
+    "vehicle_torque_setpoint": {
+      "vehicle_torque_setpoint": 917
+    },
+    "failsafe_flags": {
+      "failsafe_flags": 37
+    },
+    "vehicle_local_position": {
+      "vehicle_local_position": 185
+    },
+    "magnetometer_bias_estimate": {
+      "magnetometer_bias_estimate": 5
+    },
+    "actuator_servos": {
+      "actuator_servos": 0
+    },
+    "vehicle_air_data": {
+      "vehicle_air_data": 93
+    },
+    "estimator_innovation_variances": {
+      "estimator_innovation_variances": 37
+    },
+    "event": {
+      "event": 27
+    },
+    "sensor_mag": {
+      "sensor_mag": 18
+    },
+    "vehicle_imu": {
+      "vehicle_imu": 37
+    },
+    "estimator_states": {
+      "estimator_states": 18
+    },
+    "manual_control_setpoint": {
+      "manual_control_setpoint": 93
+    },
+    "transponder_report": {
+      "transponder_report": 0
+    },
+    "hover_thrust_estimate": {
+      "hover_thrust_estimate": 62
+    },
+    "input_rc": {
+      "input_rc": 36
+    },
+    "actuator_armed": {
+      "actuator_armed": 38
+    },
+    "trajectory_setpoint": {
+      "trajectory_setpoint": 94
+    },
+    "estimator_rng_hgt_bias": {
+      "estimator_rng_hgt_bias": 0
+    },
+    "manual_control_switches": {
+      "manual_control_switches": 19
+    },
+    "estimator_local_position": {
+      "estimator_local_position": 36
+    },
+    "estimator_innovations": {
+      "estimator_innovations": 37
+    },
+    "sensor_selection": {
+      "sensor_selection": 0
+    },
+    "estimator_optical_flow_vel": {
+      "estimator_optical_flow_vel": 0
+    },
+    "px4io_status": {
+      "px4io_status": 19
+    },
+    "vehicle_command": {
+      "vehicle_command": 1
+    },
+    "estimator_status": {
+      "estimator_status": 93
+    },
+    "estimator_status_flags": {
+      "estimator_status_flags": 42
+    },
+    "telemetry_status": {
+      "telemetry_status": 18
+    },
+    "wind": {
+      "wind": 0
+    },
+    "vehicle_constraints": {
+      "vehicle_constraints": 18
+    },
+    "sensor_baro": {
+      "sensor_baro": 18
+    },
+    "estimator_ev_pos_bias": {
+      "estimator_ev_pos_bias": 0
+    },
+    "battery_status": {
+      "battery_status": 93
+    },
+    "estimator_attitude": {
+      "estimator_attitude": 36
+    },
+    "sensor_gyro": {
+      "sensor_gyro": 18
+    },
+    "system_power": {
+      "system_power": 36
+    },
+    "sensor_accel": {
+      "sensor_accel": 18
+    },
+    "autotune_attitude_control_status": {
+      "autotune_attitude_control_status": 182
+    },
+    "estimator_wind": {
+      "estimator_wind": 0
+    },
+    "vehicle_acceleration": {
+      "vehicle_acceleration": 368
+    },
+    "vehicle_rates_setpoint": {
+      "vehicle_rates_setpoint": 917
+    },
+    "cpuload": {
+      "cpuload": 38
+    },
+    "yaw_estimator_status": {
+      "yaw_estimator_status": 13
+    },
+    "landing_gear": {
+      "landing_gear": 1
+    },
+    "vehicle_imu_status": {
+      "vehicle_imu_status": 18
+    },
+    "vehicle_gps_position": {
+      "vehicle_gps_position": 36
+    },
+    "estimator_innovation_test_ratios": {
+      "estimator_innovation_test_ratios": 37
+    },
+    "vehicle_angular_velocity": {
+      "vehicle_angular_velocity": 917
+    },
+    "vehicle_status": {
+      "vehicle_status": 38
+    },
+    "vehicle_land_detected": {
+      "vehicle_land_detected": 26
+    },
+    "vehicle_thrust_setpoint": {
+      "vehicle_thrust_setpoint": 917
+    },
+    "sensors_status_imu": {
+      "sensors_status_imu": 93
+    },
+    "vehicle_attitude_setpoint": {
+      "vehicle_attitude_setpoint": 368
+    },
+    "takeoff_status": {
+      "takeoff_status": 12
+    },
+    "position_setpoint_triplet": {
+      "position_setpoint_triplet": 13
+    },
+    "actuator_motors": {
+      "actuator_motors": 185
+    },
+    "mission_result": {
+      "mission_result": 43
+    },
+    "vehicle_global_position": {
+      "vehicle_global_position": 93
+    },
+    "estimator_gnss_hgt_bias": {
+      "estimator_gnss_hgt_bias": 0
+    }
+  },
+  "logged_messages": [
+    {
+      "log_level": 54,
+      "timestamp": 3024652889,
+      "message": "[commander] Armed by RC\t"
+    },
+    {
+      "log_level": 54,
+      "timestamp": 3024656994,
+      "message": "[logger] Start file log (type: full)"
+    },
+    {
+      "log_level": 54,
+      "timestamp": 3024658632,
+      "message": "[logger] [logger] /fs/microsd/log/2024-12-10/03_47_58.ulg\t"
+    },
+    {
+      "log_level": 54,
+      "timestamp": 3024664006,
+      "message": "[logger] Opened full log file: /fs/microsd/log/2024-12-10/03_47_58.ulg"
+    },
+    {
+      "log_level": 54,
+      "timestamp": 3029513986,
+      "message": "[commander] Takeoff detected\t"
+    },
+    {
+      "log_level": 54,
+      "timestamp": 3040229975,
+      "message": "[commander] Landing detected\t"
+    },
+    {
+      "log_level": 54,
+      "timestamp": 3042239969,
+      "message": "[commander] Disarmed by landing\t"
+    },
+    {
+      "log_level": 52,
+      "timestamp": 3042258494,
+      "message": "[health_and_arming_checks] Preflight Fail: heading estimate not stable"
+    },
+    {
+      "log_level": 52,
+      "timestamp": 3042258880,
+      "message": "[health_and_arming_checks] Preflight Fail: Yaw estimate error"
+    }
+  ],
+  "info_messages": {
+    "sys_mcu": "STM32F76xxx, rev. Z",
+    "ver_hw_subtype": "V5005000",
+    "ver_hw": "PX4_FMU_V5",
+    "sys_name": "PX4",
+    "sys_toolchain": "GNU GCC",
+    "sys_uuid": "000200000000353539303531510a003a003b",
+    "sys_os_ver": "de41e7feaeffaec3ce65327e9569e8fdb553ca3d",
+    "ver_sw": "1dacb4cdef2d7145754fc788fa8dc482eed74b40",
+    "sys_toolchain_ver": "9.3.1 20200408 (release)",
+    "metadata_events_sha256": "e0c83dce8394abf74056d8916dda8d3577ceb21cb93939193cfc6a4f37a913d2",
+    "sys_os_name": "NuttX"
+  },
+  "default_params": {},
+  "initial_params": {
+    "UAVCAN_SV_MIN1": {
+      "Int": 0
+    },
+    "EKF2_EVP_GATE": {
+      "Float": 5.0
+    },
+    "COM_WIND_MAX": {
+      "Float": -1.0
+    },
+    "RC13_MAX": {
+      "Float": 2000.0
+    },
+    "UAVCAN_EC_MAX4": {
+      "Int": 8191
+    },
+    "RC_MAP_FLTM_BTN": {
+      "Int": 0
+    },
+    "COM_ARM_SWISBTN": {
+      "Int": 0
+    },
+    "SYS_CAL_TMIN": {
+      "Int": 5
+    },
+    "IMU_INTEG_RATE": {
+      "Int": 200
+    },
+    "PWM_AUX_FAIL6": {
+      "Int": -1
+    },
+    "RC16_DZ": {
+      "Float": 0.0
+    },
+    "UAVCAN_ENABLE": {
+      "Int": 2
+    },
+    "CAL_ACC2_ZSCALE": {
+      "Float": 0.9873794
+    },
+    "PWM_MAIN_MIN7": {
+      "Int": 1000
+    },
+    "WV_GAIN": {
+      "Float": 1.0
+    },
+    "DSHOT_TEL_CFG": {
+      "Int": 0
+    },
+    "MC_ACRO_EXPO_Y": {
+      "Float": 0.69
+    },
+    "GF_MAX_VER_DIST": {
+      "Float": 0.0
+    },
+    "MPC_LAND_ALT2": {
+      "Float": 5.0
+    },
+    "EKF2_MAG_NOISE": {
+      "Float": 0.05
+    },
+    "COM_ARM_EKF_YAW": {
+      "Float": 0.5
+    },
+    "PWM_MAIN_MIN3": {
+      "Int": 1100
+    },
+    "MPC_Z_VEL_ALL": {
+      "Float": -3.0
+    },
+    "PWM_AUX_TIM0": {
+      "Int": 400
+    },
+    "UAVCAN_SV_MIN2": {
+      "Int": 0
+    },
+    "RC_MAP_TRANS_SW": {
+      "Int": 0
+    },
+    "CA_ROTOR2_AZ": {
+      "Float": -1.0
+    },
+    "EKF2_GND_EFF_DZ": {
+      "Float": 4.0
+    },
+    "PWM_MAIN_MIN8": {
+      "Int": 1000
+    },
+    "PWM_MAIN_FUNC3": {
+      "Int": 103
+    },
+    "MC_AT_START": {
+      "Int": 1
+    },
+    "UAVCAN_SV_MIN4": {
+      "Int": 0
+    },
+    "PWM_MAIN_TIM0": {
+      "Int": 400
+    },
+    "CAL_MAG0_ZOFF": {
+      "Float": -0.23708169
+    },
+    "RC10_TRIM": {
+      "Float": 1494.0
+    },
+    "CA_ROTOR_COUNT": {
+      "Int": 6
+    },
+    "EKF2_BCOEF_X": {
+      "Float": 100.0
+    },
+    "MPC_Z_VEL_MAX_DN": {
+      "Float": 1.5
+    },
+    "FW_AIRSPD_MAX": {
+      "Float": 20.0
+    },
+    "MNT_MODE_IN": {
+      "Int": -1
+    },
+    "RC9_MAX": {
+      "Float": 1944.0
+    },
+    "CA_ROTOR1_AY": {
+      "Float": 0.0
+    },
+    "CA_ROTOR6_PY": {
+      "Float": 0.0
+    },
+    "EKF2_ACC_B_NOISE": {
+      "Float": 0.003
+    },
+    "PWM_MAIN_MIN6": {
+      "Int": 1100
+    },
+    "EV_TSK_RC_LOSS": {
+      "Int": 0
+    },
+    "CAL_GYRO0_YOFF": {
+      "Float": 0.020091057
+    },
+    "PWM_MAIN_FAIL1": {
+      "Int": -1
+    },
+    "UAVCAN_SUB_GPS": {
+      "Int": 1
+    },
+    "RC18_TRIM": {
+      "Float": 1500.0
+    },
+    "EKF2_GPS_POS_X": {
+      "Float": 0.0
+    },
+    "SDLOG_UUID": {
+      "Int": 1
+    },
+    "CA_ROTOR9_AY": {
+      "Float": 0.0
+    },
+    "CBRK_BUZZER": {
+      "Int": 0
+    },
+    "CAL_MAG0_YODIAG": {
+      "Float": 0.034814022
+    },
+    "CA_ROTOR3_PX": {
+      "Float": -0.43
+    },
+    "CAL_ACC3_ID": {
+      "Int": 0
+    },
+    "EKF2_ABL_GYRLIM": {
+      "Float": 3.0
+    },
+    "CA_SV7_SLEW": {
+      "Float": 0.0
+    },
+    "PLD_MAX_SRCH": {
+      "Int": 3
+    },
+    "CA_ROTOR6_PZ": {
+      "Float": 0.0
+    },
+    "RC4_MAX": {
+      "Float": 1948.0
+    },
+    "MC_PITCHRATE_K": {
+      "Float": 1.0
+    },
+    "EKF2_OF_N_MIN": {
+      "Float": 0.15
+    },
+    "FLW_TGT_MAX_VEL": {
+      "Float": 5.0
+    },
+    "EKF2_RNG_PITCH": {
+      "Float": 0.0
+    },
+    "CA_ROTOR1_AX": {
+      "Float": 0.0
+    },
+    "MC_ACRO_Y_MAX": {
+      "Float": 540.0
+    },
+    "CA_ROTOR10_AZ": {
+      "Float": -1.0
+    },
+    "NAV_FORCE_VT": {
+      "Int": 1
+    },
+    "RC5_MIN": {
+      "Float": 1044.0
+    },
+    "EKF2_BETA_GATE": {
+      "Float": 5.0
+    },
+    "UAVCAN_SUB_BTN": {
+      "Int": 0
+    },
+    "CA_ROTOR5_AY": {
+      "Float": 0.0
+    },
+    "CA_R7_SLEW": {
+      "Float": 0.0
+    },
+    "EKF2_TAS_GATE": {
+      "Float": 3.0
+    },
+    "COM_ARM_EKF_POS": {
+      "Float": 0.5
+    },
+    "CA_ROTOR0_AY": {
+      "Float": 0.0
+    },
+    "CA_R0_SLEW": {
+      "Float": 0.0
+    },
+    "EKF2_PCOEF_Z": {
+      "Float": 0.0
+    },
+    "FW_AIRSPD_TRIM": {
+      "Float": 15.0
+    },
+    "EKF2_RNG_POS_Z": {
+      "Float": 0.0
+    },
+    "MPC_POS_MODE": {
+      "Int": 4
+    },
+    "PWM_MAIN_MAX4": {
+      "Int": 1900
+    },
+    "PWM_MAIN_MAX8": {
+      "Int": 2000
+    },
+    "COM_RC_LOSS_T": {
+      "Float": 0.5
+    },
+    "BAT2_V_CHARGED": {
+      "Float": 4.05
+    },
+    "SENS_EXT_I2C_PRB": {
+      "Int": 1
+    },
+    "BAT2_SOURCE": {
+      "Int": -1
+    },
+    "RC_MAP_OFFB_SW": {
+      "Int": 0
+    },
+    "WV_EN": {
+      "Int": 0
+    },
+    "EKF2_MAG_GATE": {
+      "Float": 3.0
+    },
+    "PWM_MAIN_FUNC8": {
+      "Int": 0
+    },
+    "RC6_MIN": {
+      "Float": 1000.0
+    },
+    "COM_HLDL_REG_T": {
+      "Int": 0
+    },
+    "HTE_HT_NOISE": {
+      "Float": 0.0036
+    },
+    "IMU_GYRO_DNF_BW": {
+      "Float": 15.0
+    },
+    "UAVCAN_SV_FAIL7": {
+      "Int": -1
+    },
+    "SENS_BOARD_Z_OFF": {
+      "Float": 0.0
+    },
+    "UAVCAN_SV_MIN7": {
+      "Int": 0
+    },
+    "EKF2_OF_POS_X": {
+      "Float": 0.0
+    },
+    "CA_ROTOR8_PY": {
+      "Float": 0.0
+    },
+    "PLD_SRCH_TOUT": {
+      "Float": 10.0
+    },
+    "BAT1_V_CHARGED": {
+      "Float": 4.05
+    },
+    "IMU_GYRO_NF1_FRQ": {
+      "Float": 0.0
+    },
+    "UAVCAN_EC_MIN8": {
+      "Int": 1
+    },
+    "MC_PR_INT_LIM": {
+      "Float": 0.3
+    },
+    "NAV_TRAFF_A_HOR": {
+      "Float": 500.0
+    },
+    "SENS_TFLOW_CFG": {
+      "Int": 0
+    },
+    "UAVCAN_EC_MIN2": {
+      "Int": 1
+    },
+    "CAL_MAG1_YCOMP": {
+      "Float": 0.0
+    },
+    "RC8_REV": {
+      "Float": 1.0
+    },
+    "FD_FAIL_P_TTRI": {
+      "Float": 0.3
+    },
+    "UAVCAN_SV_MAX7": {
+      "Int": 1000
+    },
+    "UAVCAN_EC_FUNC6": {
+      "Int": 0
+    },
+    "CA_ROTOR4_PX": {
+      "Float": 0.43
+    },
+    "EKF2_REQ_GPS_H": {
+      "Float": 10.0
+    },
+    "CAL_GYRO1_PRIO": {
+      "Int": 50
+    },
+    "BAT2_N_CELLS": {
+      "Int": 0
+    },
+    "MAV_FWDEXTSP": {
+      "Int": 1
+    },
+    "RC10_DZ": {
+      "Float": 0.0
+    },
+    "SDLOG_UTC_OFFSET": {
+      "Int": 0
+    },
+    "EKF2_OF_POS_Y": {
+      "Float": 0.0
+    },
+    "UAVCAN_SV_FUNC7": {
+      "Int": 0
+    },
+    "EKF2_SEL_IMU_ANG": {
+      "Float": 15.0
+    },
+    "PWM_AUX_MIN4": {
+      "Int": 1000
+    },
+    "MPC_YAWRAUTO_MAX": {
+      "Float": 45.0
+    },
+    "RC7_MIN": {
+      "Float": 1000.0
+    },
+    "EKF2_ACC_NOISE": {
+      "Float": 0.35
+    },
+    "EKF2_GPS_DELAY": {
+      "Float": 110.0
+    },
+    "MIS_YAW_ERR": {
+      "Float": 12.0
+    },
+    "VT_B_DEC_MSS": {
+      "Float": 2.0
+    },
+    "EKF2_GPS_POS_Z": {
+      "Float": 0.0
+    },
+    "MPC_XY_TRAJ_P": {
+      "Float": 0.5
+    },
+    "COM_KILL_DISARM": {
+      "Float": 5.0
+    },
+    "UAVCAN_SV_DIS8": {
+      "Int": 500
+    },
+    "MPC_HOLD_DZ": {
+      "Float": 0.1
+    },
+    "UAVCAN_SV_DIS5": {
+      "Int": 500
+    },
+    "CA_ROTOR3_AZ": {
+      "Float": -1.0
+    },
+    "MPC_MANTHR_MIN": {
+      "Float": 0.08
+    },
+    "CAL_MAG0_XOFF": {
+      "Float": -0.08086495
+    },
+    "RC9_MIN": {
+      "Float": 1044.0
+    },
+    "RC8_DZ": {
+      "Float": 10.0
+    },
+    "RC2_MIN": {
+      "Float": 1094.0
+    },
+    "CA_R8_SLEW": {
+      "Float": 0.0
+    },
+    "RC17_DZ": {
+      "Float": 0.0
+    },
+    "RC_MAP_AUX2": {
+      "Int": 0
+    },
+    "CA_SV6_SLEW": {
+      "Float": 0.0
+    },
+    "UAVCAN_SV_FUNC2": {
+      "Int": 0
+    },
+    "CAL_ACC0_ID": {
+      "Int": 3670026
+    },
+    "PWM_MAIN_FUNC1": {
+      "Int": 101
+    },
+    "CA_ROTOR2_AX": {
+      "Float": 0.0
+    },
+    "CAL_ACC1_ZOFF": {
+      "Float": -0.026620753
+    },
+    "SER_TEL1_BAUD": {
+      "Int": 57600
+    },
+    "MPC_LAND_SPEED": {
+      "Float": 0.7
+    },
+    "RC_OFFB_TH": {
+      "Float": 0.75
+    },
+    "EKF2_DRAG_NOISE": {
+      "Float": 2.5
+    },
+    "EKF2_HEAD_NOISE": {
+      "Float": 0.3
+    },
+    "UAVCAN_SV_DIS4": {
+      "Int": 500
+    },
+    "TC_A_ENABLE": {
+      "Int": 0
+    },
+    "GPS_1_GNSS": {
+      "Int": 0
+    },
+    "RC_MAP_ENG_MOT": {
+      "Int": 0
+    },
+    "SYS_CAL_BARO": {
+      "Int": 0
+    },
+    "RC2_REV": {
+      "Float": 1.0
+    },
+    "MC_ROLLRATE_MAX": {
+      "Float": 220.0
+    },
+    "CAL_MAG0_ZCOMP": {
+      "Float": 0.0
+    },
+    "PWM_AUX_FAIL10": {
+      "Int": -1
+    },
+    "CAL_MAG2_ROT": {
+      "Int": -1
+    },
+    "COM_ARM_SDCARD": {
+      "Int": 1
+    },
+    "MAV_0_RADIO_CTL": {
+      "Int": 1
+    },
+    "CA_ROTOR8_CT": {
+      "Float": 6.5
+    },
+    "UAVCAN_PUB_ARM": {
+      "Int": 0
+    },
+    "PWM_AUX_DIS4": {
+      "Int": 1000
+    },
+    "CAL_ACC1_YOFF": {
+      "Float": 0.12836978
+    },
+    "CAL_MAG2_ID": {
+      "Int": 0
+    },
+    "MC_PITCHRATE_D": {
+      "Float": 0.003
+    },
+    "PWM_AUX_FAIL9": {
+      "Int": -1
+    },
+    "CA_ROTOR7_PX": {
+      "Float": 0.0
+    },
+    "GPS_YAW_OFFSET": {
+      "Float": 0.0
+    },
+    "BAT1_A_PER_V": {
+      "Float": 36.367516
+    },
+    "RC4_DZ": {
+      "Float": 10.0
+    },
+    "CAL_GYRO2_XOFF": {
+      "Float": -0.001559359
+    },
+    "EKF2_NOAID_TOUT": {
+      "Int": 5000000
+    },
+    "MC_AT_SYSID_AMP": {
+      "Float": 0.7
+    },
+    "UXRCE_DDS_CFG": {
+      "Int": 0
+    },
+    "CA_METHOD": {
+      "Int": 2
+    },
+    "FD_ACT_MOT_TOUT": {
+      "Int": 100
+    },
+    "CA_ROTOR3_CT": {
+      "Float": 6.5
+    },
+    "MOT_POLE_COUNT": {
+      "Int": 14
+    },
+    "MC_AT_EN": {
+      "Int": 1
+    },
+    "PWM_MAIN_DIS7": {
+      "Int": 1000
+    },
+    "UAVCAN_EC_MAX7": {
+      "Int": 8191
+    },
+    "FW_T_SINK_R_SP": {
+      "Float": 2.0
+    },
+    "UAVCAN_SV_FAIL8": {
+      "Int": -1
+    },
+    "CA_ROTOR10_AX": {
+      "Float": 0.0
+    },
+    "CAL_BARO1_ID": {
+      "Int": 0
+    },
+    "CA_ROTOR11_PY": {
+      "Float": 0.0
+    },
+    "CA_ROTOR6_CT": {
+      "Float": 6.5
+    },
+    "FLW_TGT_HT": {
+      "Float": 8.0
+    },
+    "COM_RC_IN_MODE": {
+      "Int": 3
+    },
+    "EKF2_EV_POS_Z": {
+      "Float": 0.0
+    },
+    "RC3_MAX": {
+      "Float": 1932.0
+    },
+    "CAL_ACC2_XOFF": {
+      "Float": 0.69213986
+    },
+    "MC_PITCHRATE_FF": {
+      "Float": 0.0
+    },
+    "CA_ROTOR11_CT": {
+      "Float": 6.5
+    },
+    "EKF2_MULTI_IMU": {
+      "Int": 3
+    },
+    "COM_HOME_IN_AIR": {
+      "Int": 0
+    },
+    "UAVCAN_SV_DIS1": {
+      "Int": 500
+    },
+    "RC10_MIN": {
+      "Float": 1044.0
+    },
+    "RC_MAP_AUX6": {
+      "Int": 0
+    },
+    "SENS_MAG_RATE": {
+      "Float": 15.0
+    },
+    "CAL_ACC0_ZOFF": {
+      "Float": 0.10758786
+    },
+    "CAL_GYRO3_ID": {
+      "Int": 0
+    },
+    "EKF2_SEL_IMU_RAT": {
+      "Float": 7.0
+    },
+    "GF_SOURCE": {
+      "Int": 0
+    },
+    "PWM_AUX_DIS8": {
+      "Int": 1000
+    },
+    "UAVCAN_SV_FUNC5": {
+      "Int": 0
+    },
+    "LNDMC_Z_VEL_MAX": {
+      "Float": 0.25
+    },
+    "IMU_ACCEL_CUTOFF": {
+      "Float": 30.0
+    },
+    "RC_MAP_PARAM3": {
+      "Int": 0
+    },
+    "RTL_MIN_DIST": {
+      "Float": 10.0
+    },
+    "RC11_TRIM": {
+      "Float": 1500.0
+    },
+    "COM_FLTMODE3": {
+      "Int": 2
+    },
+    "MAV_RADIO_TOUT": {
+      "Int": 5
+    },
+    "COM_POS_LOW_EPH": {
+      "Float": -1.0
+    },
+    "RC8_TRIM": {
+      "Float": 1494.0
+    },
+    "RC11_MAX": {
+      "Float": 2000.0
+    },
+    "CAL_GYRO0_XOFF": {
+      "Float": 0.015207075
+    },
+    "PWM_AUX_DIS3": {
+      "Int": 1000
+    },
+    "WV_ROLL_MIN": {
+      "Float": 1.0
+    },
+    "PWM_MAIN_FUNC2": {
+      "Int": 102
+    },
+    "COM_FLTMODE5": {
+      "Int": 1
+    },
+    "SENS_EN_ADIS164X": {
+      "Int": 0
+    },
+    "SENS_IMU_MODE": {
+      "Int": 0
+    },
+    "CA_ROTOR5_AX": {
+      "Float": 0.0
+    },
+    "RC_MAP_ACRO_SW": {
+      "Int": 0
+    },
+    "COM_ARM_ARSP_EN": {
+      "Int": 1
+    },
+    "NAV_TRAFF_AVOID": {
+      "Int": 1
+    },
+    "CA_ROTOR9_PY": {
+      "Float": 0.0
+    },
+    "CA_ROTOR0_PX": {
+      "Float": 0.0
+    },
+    "RC_MAP_AUX3": {
+      "Int": 0
+    },
+    "HTE_HT_ERR_INIT": {
+      "Float": 0.1
+    },
+    "SENS_EN_SPL06": {
+      "Int": 0
+    },
+    "GF_ALTMODE": {
+      "Int": 0
+    },
+    "MPC_XY_VEL_P_ACC": {
+      "Float": 1.8
+    },
+    "RC_GEAR_TH": {
+      "Float": 0.75
+    },
+    "NAV_MC_ALT_RAD": {
+      "Float": 0.8
+    },
+    "COM_ACT_FAIL_ACT": {
+      "Int": 0
+    },
+    "DSHOT_3D_DEAD_H": {
+      "Int": 1000
+    },
+    "TRIG_MODE": {
+      "Int": 0
+    },
+    "CA_ROTOR2_AY": {
+      "Float": 0.0
+    },
+    "DSHOT_3D_DEAD_L": {
+      "Int": 1000
+    },
+    "BAT_EMERGEN_THR": {
+      "Float": 0.05
+    },
+    "CA_ROTOR3_AY": {
+      "Float": 0.0
+    },
+    "MPC_XY_VEL_D_ACC": {
+      "Float": 0.2
+    },
+    "EKF2_RNG_QLTY_T": {
+      "Float": 1.0
+    },
+    "EKF2_ABL_ACCLIM": {
+      "Float": 25.0
+    },
+    "FW_T_CLMB_R_SP": {
+      "Float": 3.0
+    },
+    "COM_RC_ARM_HYST": {
+      "Int": 1000
+    },
+    "UAVCAN_SV_MAX1": {
+      "Int": 1000
+    },
+    "FD_FAIL_R_TTRI": {
+      "Float": 0.3
+    },
+    "CA_ROTOR5_PZ": {
+      "Float": 0.0
+    },
+    "EKF2_MAG_B_NOISE": {
+      "Float": 0.0001
+    },
+    "EKF2_AID_MASK": {
+      "Int": 0
+    },
+    "RC_MAP_AUX1": {
+      "Int": 0
+    },
+    "MPC_MAN_TILT_MAX": {
+      "Float": 35.0
+    },
+    "CAL_AIR_CMODEL": {
+      "Int": 0
+    },
+    "CA_SV0_SLEW": {
+      "Float": 0.0
+    },
+    "RC6_TRIM": {
+      "Float": 1500.0
+    },
+    "SYS_HITL": {
+      "Int": 0
+    },
+    "PWM_AUX_MAX9": {
+      "Int": 2000
+    },
+    "RC5_TRIM": {
+      "Float": 1494.0
+    },
+    "NAV_DLL_ACT": {
+      "Int": 0
+    },
+    "MPC_TILTMAX_AIR": {
+      "Float": 45.0
+    },
+    "UAVCAN_SUB_HYGRO": {
+      "Int": 0
+    },
+    "MBE_ENABLE": {
+      "Int": 1
+    },
+    "CA_ROTOR2_PZ": {
+      "Float": 0.0
+    },
+    "MPC_HOLD_MAX_Z": {
+      "Float": 0.6
+    },
+    "RC7_DZ": {
+      "Float": 10.0
+    },
+    "RTL_TIME_FACTOR": {
+      "Float": 1.1
+    },
+    "CAL_BARO0_ID": {
+      "Int": 0
+    },
+    "CA_ROTOR10_CT": {
+      "Float": 6.5
+    },
+    "EKF2_EV_DELAY": {
+      "Float": 0.0
+    },
+    "CAL_MAG0_XODIAG": {
+      "Float": -0.0058190976
+    },
+    "RC_MAP_RETURN_SW": {
+      "Int": 0
+    },
+    "IMU_DGYRO_CUTOFF": {
+      "Float": 30.0
+    },
+    "EKF2_RNG_CTRL": {
+      "Int": 1
+    },
+    "SENS_EN_IRLOCK": {
+      "Int": 0
+    },
+    "CAL_GYRO0_PRIO": {
+      "Int": 50
+    },
+    "LND_FLIGHT_T_HI": {
+      "Int": 0
+    },
+    "EKF2_GYR_B_LIM": {
+      "Float": 0.15
+    },
+    "CA_ROTOR0_PZ": {
+      "Float": 0.0
+    },
+    "CA_ROTOR10_AY": {
+      "Float": 0.0
+    },
+    "PWM_AUX_MIN6": {
+      "Int": 1000
+    },
+    "EKF2_TAU_VEL": {
+      "Float": 0.25
+    },
+    "CAL_ACC1_ROT": {
+      "Int": -1
+    },
+    "CAL_ACC0_PRIO": {
+      "Int": 50
+    },
+    "CAL_MAG1_XODIAG": {
+      "Float": 0.0
+    },
+    "CA_AIRFRAME": {
+      "Int": 0
+    },
+    "CAL_ACC0_XSCALE": {
+      "Float": 0.99148566
+    },
+    "RC_CHAN_CNT": {
+      "Int": 18
+    },
+    "RC4_REV": {
+      "Float": 1.0
+    },
+    "EKF2_GYR_B_NOISE": {
+      "Float": 0.001
+    },
+    "RTL_HDG_MD": {
+      "Int": 0
+    },
+    "MPC_TKO_SPEED": {
+      "Float": 1.5
+    },
+    "EKF2_HGT_REF": {
+      "Int": 1
+    },
+    "EKF2_OF_CTRL": {
+      "Int": 0
+    },
+    "PWM_AUX_FUNC10": {
+      "Int": 0
+    },
+    "CAL_ACC2_PRIO": {
+      "Int": 50
+    },
+    "RC_MAP_AUX5": {
+      "Int": 0
+    },
+    "CAL_MAG_COMP_TYP": {
+      "Int": 0
+    },
+    "MC_YAWRATE_K": {
+      "Float": 1.0
+    },
+    "IMU_GYRO_NF0_BW": {
+      "Float": 20.0
+    },
+    "CAL_BARO3_ID": {
+      "Int": 0
+    },
+    "GND_SPEED_THR_SC": {
+      "Float": 1.0
+    },
+    "RC12_REV": {
+      "Float": 1.0
+    },
+    "BATMON_DRIVER_EN": {
+      "Int": 0
+    },
+    "SENS_GPS_PRIME": {
+      "Int": 0
+    },
+    "EKF2_MIN_RNG": {
+      "Float": 0.1
+    },
+    "MPC_Z_V_AUTO_DN": {
+      "Float": 1.5
+    },
+    "PWM_AUX_DIS1": {
+      "Int": 1000
+    },
+    "PLD_BTOUT": {
+      "Float": 5.0
+    },
+    "EKF2_RNG_A_HMAX": {
+      "Float": 5.0
+    },
+    "CA_SV2_SLEW": {
+      "Float": 0.0
+    },
+    "CA_ROTOR3_PY": {
+      "Float": 0.25
+    },
+    "UAVCAN_SV_FAIL3": {
+      "Int": -1
+    },
+    "MC_ACRO_SUPEXPOY": {
+      "Float": 0.7
+    },
+    "MPC_Z_MAN_EXPO": {
+      "Float": 0.6
+    },
+    "EKF2_RNG_GATE": {
+      "Float": 5.0
+    },
+    "PWM_AUX_MAX6": {
+      "Int": 2000
+    },
+    "RC8_MIN": {
+      "Float": 1044.0
+    },
+    "CAL_GYRO1_YOFF": {
+      "Float": -0.009946503
+    },
+    "SENS_EN_MS4525DO": {
+      "Int": 0
+    },
+    "CA_ROTOR11_KM": {
+      "Float": 0.05
+    },
+    "EKF2_GPS_CHECK": {
+      "Int": 245
+    },
+    "CA_ROTOR4_AY": {
+      "Float": 0.0
+    },
+    "RC_MAP_FLAPS": {
+      "Int": 0
+    },
+    "PWM_MAIN_FAIL6": {
+      "Int": -1
+    },
+    "RC2_MAX": {
+      "Float": 1993.0
+    },
+    "COM_LOW_BAT_ACT": {
+      "Int": 0
+    },
+    "RC_ARMSWITCH_TH": {
+      "Float": 0.75
+    },
+    "FD_FAIL_R": {
+      "Int": 60
+    },
+    "RC15_TRIM": {
+      "Float": 1500.0
+    },
+    "UAVCAN_SV_DIS2": {
+      "Int": 500
+    },
+    "CA_ROTOR1_CT": {
+      "Float": 6.5
+    },
+    "FW_ARSP_MODE": {
+      "Int": 0
+    },
+    "PWM_MAIN_MIN5": {
+      "Int": 1100
+    },
+    "MAV_0_FORWARD": {
+      "Int": 1
+    },
+    "COM_PARACHUTE": {
+      "Int": 0
+    },
+    "SENS_EN_LL40LS": {
+      "Int": 0
+    },
+    "BAT2_CAPACITY": {
+      "Float": -1.0
+    },
+    "MC_ACRO_SUPEXPO": {
+      "Float": 0.7
+    },
+    "EKF2_MAG_DECL": {
+      "Float": -2.3523893
+    },
+    "EKF2_RNG_POS_X": {
+      "Float": 0.0
+    },
+    "PWM_MAIN_MIN4": {
+      "Int": 1100
+    },
+    "EKF2_EAS_NOISE": {
+      "Float": 1.4
+    },
+    "CA_R_REV": {
+      "Int": 0
+    },
+    "EKF2_GPS_V_GATE": {
+      "Float": 5.0
+    },
+    "BAT2_V_LOAD_DROP": {
+      "Float": 0.1
+    },
+    "LNDMC_ALT_MAX": {
+      "Float": -1.0
+    },
+    "NAV_FW_ALT_RAD": {
+      "Float": 10.0
+    },
+    "MPC_LAND_CRWL": {
+      "Float": 0.3
+    },
+    "MPC_USE_HTE": {
+      "Int": 1
+    },
+    "BAT1_CAPACITY": {
+      "Float": -1.0
+    },
+    "CAL_MAG1_ZCOMP": {
+      "Float": 0.0
+    },
+    "MPC_HOLD_MAX_XY": {
+      "Float": 0.8
+    },
+    "CA_ROTOR1_PY": {
+      "Float": -0.5
+    },
+    "CAL_AIR_TUBELEN": {
+      "Float": 0.2
+    },
+    "BAT_N_CELLS": {
+      "Int": 3
+    },
+    "UAVCAN_SUB_RNG": {
+      "Int": 0
+    },
+    "CAL_GYRO2_ZOFF": {
+      "Float": -0.0041722143
+    },
+    "RC14_MIN": {
+      "Float": 1000.0
+    },
+    "COM_OBS_AVOID": {
+      "Int": 0
+    },
+    "BAT1_V_LOAD_DROP": {
+      "Float": 0.1
+    },
+    "MC_ROLLRATE_FF": {
+      "Float": 0.0
+    },
+    "NAV_TRAFF_COLL_T": {
+      "Int": 60
+    },
+    "RC3_MIN": {
+      "Float": 1049.0
+    },
+    "CBRK_SUPPLY_CHK": {
+      "Int": 0
+    },
+    "SENS_IMU_AUTOCAL": {
+      "Int": 1
+    },
+    "SENS_EN_PGA460": {
+      "Int": 0
+    },
+    "PWM_AUX_TIM3": {
+      "Int": 400
+    },
+    "GF_PREDICT": {
+      "Int": 0
+    },
+    "EKF2_GND_MAX_HGT": {
+      "Float": 0.5
+    },
+    "EKF2_MAG_DELAY": {
+      "Float": 0.0
+    },
+    "UAVCAN_EC_FUNC5": {
+      "Int": 0
+    },
+    "CA_R6_SLEW": {
+      "Float": 0.0
+    },
+    "GF_ACTION": {
+      "Int": 2
+    },
+    "FD_ACT_MOT_THR": {
+      "Float": 0.2
+    },
+    "CA_ROTOR8_PZ": {
+      "Float": 0.0
+    },
+    "CA_ROTOR5_KM": {
+      "Float": -0.05
+    },
+    "BAT_V_EMPTY": {
+      "Float": 3.6
+    },
+    "CAL_MAG0_PRIO": {
+      "Int": 50
+    },
+    "COM_PREARM_MODE": {
+      "Int": 0
+    },
+    "SENS_GPS_TAU": {
+      "Float": 10.0
+    },
+    "UAVCAN_SUB_DPRES": {
+      "Int": 0
+    },
+    "MIS_MNT_YAW_CTL": {
+      "Int": 0
+    },
+    "CAL_GYRO0_ROT": {
+      "Int": -1
+    },
+    "CAL_ACC2_XSCALE": {
+      "Float": 0.98491174
+    },
+    "SENS_MAG_SIDES": {
+      "Int": 63
+    },
+    "SENS_EN_VL53L1X": {
+      "Int": 0
+    },
+    "CA_ROTOR10_PY": {
+      "Float": 0.0
+    },
+    "BAT_LOW_THR": {
+      "Float": 0.15
+    },
+    "MPC_VEL_MAN_BACK": {
+      "Float": -1.0
+    },
+    "PWM_MAIN_MAX7": {
+      "Int": 2000
+    },
+    "CA_ROTOR2_PY": {
+      "Float": -0.25
+    },
+    "MC_AT_APPLY": {
+      "Int": 1
+    },
+    "EKF2_TAU_POS": {
+      "Float": 0.25
+    },
+    "UAVCAN_EC_MAX5": {
+      "Int": 8191
+    },
+    "RC7_TRIM": {
+      "Float": 1500.0
+    },
+    "UAVCAN_SV_DIS3": {
+      "Int": 500
+    },
+    "RC6_MAX": {
+      "Float": 2000.0
+    },
+    "COM_ARM_AUTH_MET": {
+      "Int": 0
+    },
+    "CAL_MAG1_XSCALE": {
+      "Float": 1.0
+    },
+    "SENS_MAG_MODE": {
+      "Int": 1
+    },
+    "CAL_MAG1_ID": {
+      "Int": 396809
+    },
+    "EKF2_RNG_POS_Y": {
+      "Float": 0.0
+    },
+    "UAVCAN_SUB_IMU": {
+      "Int": 0
+    },
+    "NAV_TRAFF_A_VER": {
+      "Float": 500.0
+    },
+    "RC13_TRIM": {
+      "Float": 1500.0
+    },
+    "FD_EXT_ATS_EN": {
+      "Int": 0
+    },
+    "PWM_MAIN_MIN1": {
+      "Int": 1100
+    },
+    "UAVCAN_SUB_BAT": {
+      "Int": 0
+    },
+    "COM_DISARM_LAND": {
+      "Float": 2.0
+    },
+    "MPC_XY_ERR_MAX": {
+      "Float": 2.0
+    },
+    "MAV_2_CONFIG": {
+      "Int": 0
+    },
+    "RC12_TRIM": {
+      "Float": 1500.0
+    },
+    "CP_DIST": {
+      "Float": -1.0
+    },
+    "EKF2_PCOEF_YP": {
+      "Float": 0.0
+    },
+    "CAL_GYRO2_PRIO": {
+      "Int": 50
+    },
+    "EKF2_ABIAS_INIT": {
+      "Float": 0.2
+    },
+    "EKF2_BCOEF_Y": {
+      "Float": 100.0
+    },
+    "PWM_MAIN_DIS5": {
+      "Int": 1000
+    },
+    "PWM_MAIN_REV": {
+      "Int": 0
+    },
+    "CA_ROTOR0_KM": {
+      "Float": -0.05
+    },
+    "EKF2_RNG_SFE": {
+      "Float": 0.05
+    },
+    "CA_ROTOR6_KM": {
+      "Float": 0.05
+    },
+    "PWM_AUX_FAIL8": {
+      "Int": -1
+    },
+    "RC3_REV": {
+      "Float": 1.0
+    },
+    "EKF2_PCOEF_YN": {
+      "Float": 0.0
+    },
+    "PLD_FAPPR_ALT": {
+      "Float": 0.1
+    },
+    "COM_POS_FS_EPH": {
+      "Float": 5.0
+    },
+    "SENS_CM8JL65_CFG": {
+      "Int": 0
+    },
+    "RC_MAP_AUX4": {
+      "Int": 0
+    },
+    "CAL_MAG1_YOFF": {
+      "Float": -0.4564414
+    },
+    "EKF2_SEL_IMU_ACC": {
+      "Float": 1.0
+    },
+    "PWM_AUX_TIM1": {
+      "Int": 400
+    },
+    "MPC_MAN_Y_MAX": {
+      "Float": 150.0
+    },
+    "COM_QC_ACT": {
+      "Int": 0
+    },
+    "BAT1_V_CHANNEL": {
+      "Int": -1
+    },
+    "MPC_YAW_EXPO": {
+      "Float": 0.6
+    },
+    "UAVCAN_PUB_MBD": {
+      "Int": 0
+    },
+    "MC_YAW_P": {
+      "Float": 2.8
+    },
+    "UAVCAN_SV_FAIL2": {
+      "Int": -1
+    },
+    "CA_ROTOR3_KM": {
+      "Float": 0.05
+    },
+    "UAVCAN_EC_MIN3": {
+      "Int": 1
+    },
+    "CAL_MAG1_PRIO": {
+      "Int": 75
+    },
+    "UAVCAN_SV_MAX8": {
+      "Int": 1000
+    },
+    "BAT1_R_INTERNAL": {
+      "Float": 0.005
+    },
+    "RC_ENG_MOT_TH": {
+      "Float": 0.75
+    },
+    "PWM_AUX_FAIL11": {
+      "Int": -1
+    },
+    "BAT1_I_CHANNEL": {
+      "Int": -1
+    },
+    "PWM_AUX_TIM2": {
+      "Int": 400
+    },
+    "PWM_MAIN_MAX2": {
+      "Int": 1900
+    },
+    "EKF2_TERR_GRAD": {
+      "Float": 0.5
+    },
+    "PWM_MAIN_DIS6": {
+      "Int": 1000
+    },
+    "RC18_DZ": {
+      "Float": 0.0
+    },
+    "CA_ROTOR2_CT": {
+      "Float": 6.5
+    },
+    "RC16_TRIM": {
+      "Float": 1500.0
+    },
+    "PWM_AUX_MAX4": {
+      "Int": 2000
+    },
+    "PWM_AUX_FUNC6": {
+      "Int": 0
+    },
+    "EKF2_PREDICT_US": {
+      "Int": 10000
+    },
+    "FLW_TGT_FA": {
+      "Float": 180.0
+    },
+    "PWM_MAIN_MAX6": {
+      "Int": 1900
+    },
+    "PWM_AUX_FAIL1": {
+      "Int": -1
+    },
+    "UAVCAN_EC_MIN1": {
+      "Int": 1
+    },
+    "PWM_AUX_MIN9": {
+      "Int": 1000
+    },
+    "COM_ARM_AUTH_ID": {
+      "Int": 10
+    },
+    "RC7_REV": {
+      "Float": 1.0
+    },
+    "UAVCAN_EC_FUNC2": {
+      "Int": 0
+    },
+    "SER_GPS1_BAUD": {
+      "Int": 0
+    },
+    "MC_PITCH_P": {
+      "Float": 6.5
+    },
+    "UAVCAN_SUB_ASPD": {
+      "Int": 0
+    },
+    "GPS_UBX_BAUD2": {
+      "Int": 230400
+    },
+    "PWM_MAIN_FUNC5": {
+      "Int": 105
+    },
+    "MC_YAW_WEIGHT": {
+      "Float": 0.4
+    },
+    "PWM_AUX_FUNC5": {
+      "Int": 0
+    },
+    "CA_ROTOR11_AZ": {
+      "Float": -1.0
+    },
+    "TC_B_ENABLE": {
+      "Int": 0
+    },
+    "EKF2_HDG_GATE": {
+      "Float": 2.6
+    },
+    "CA_ROTOR5_PY": {
+      "Float": -0.25
+    },
+    "PWM_MAIN_TIM1": {
+      "Int": 400
+    },
+    "UAVCAN_EC_MAX3": {
+      "Int": 8191
+    },
+    "UAVCAN_SV_DIS7": {
+      "Int": 500
+    },
+    "RTL_DESCEND_ALT": {
+      "Float": 10.0
+    },
+    "EKF2_REQ_HDRIFT": {
+      "Float": 0.1
+    },
+    "EKF2_EV_POS_X": {
+      "Float": 0.0
+    },
+    "NAV_ACC_RAD": {
+      "Float": 2.0
+    },
+    "RC8_MAX": {
+      "Float": 1944.0
+    },
+    "CA_ROTOR9_CT": {
+      "Float": 6.5
+    },
+    "BAT2_V_EMPTY": {
+      "Float": 3.6
+    },
+    "PWM_AUX_MIN10": {
+      "Int": 1000
+    },
+    "MPC_XY_VEL_MAX": {
+      "Float": 12.0
+    },
+    "MPC_XY_CRUISE": {
+      "Float": 5.0
+    },
+    "FD_ACT_EN": {
+      "Int": 1
+    },
+    "EKF2_EVV_GATE": {
+      "Float": 3.0
+    },
+    "CA_R10_SLEW": {
+      "Float": 0.0
+    },
+    "RC_LOITER_TH": {
+      "Float": 0.75
+    },
+    "CA_ROTOR7_AX": {
+      "Float": 0.0
+    },
+    "EKF2_TERR_NOISE": {
+      "Float": 5.0
+    },
+    "CA_ROTOR5_PX": {
+      "Float": -0.43
+    },
+    "CAL_ACC2_YSCALE": {
+      "Float": 0.9790447
+    },
+    "CA_ROTOR11_PZ": {
+      "Float": 0.0
+    },
+    "RC11_DZ": {
+      "Float": 0.0
+    },
+    "RC17_MAX": {
+      "Float": 2000.0
+    },
+    "LNDMC_ALT_GND": {
+      "Float": 2.0
+    },
+    "UAVCAN_SV_MIN5": {
+      "Int": 0
+    },
+    "BAT2_R_INTERNAL": {
+      "Float": 0.005
+    },
+    "SYS_CAL_GYRO": {
+      "Int": 0
+    },
+    "CBRK_AIRSPD_CHK": {
+      "Int": 0
+    },
+    "EKF2_EVP_NOISE": {
+      "Float": 0.1
+    },
+    "MC_RR_INT_LIM": {
+      "Float": 0.3
+    },
+    "MPC_LAND_ALT3": {
+      "Float": 1.0
+    },
+    "GPS_SAT_INFO": {
+      "Int": 0
+    },
+    "MPC_XY_VEL_I_ACC": {
+      "Float": 0.4
+    },
+    "EKF2_REQ_VDRIFT": {
+      "Float": 0.2
+    },
+    "COM_WIND_WARN": {
+      "Float": -1.0
+    },
+    "IMU_GYRO_DNF_EN": {
+      "Int": 0
+    },
+    "EKF2_DECL_TYPE": {
+      "Int": 7
+    },
+    "CA_SV5_SLEW": {
+      "Float": 0.0
+    },
+    "EKF2_RNG_K_GATE": {
+      "Float": 1.0
+    },
+    "PWM_AUX_FAIL2": {
+      "Int": -1
+    },
+    "CAL_MAG0_ZSCALE": {
+      "Float": 0.970755
+    },
+    "CA_ROTOR0_AX": {
+      "Float": 0.0
+    },
+    "CP_DELAY": {
+      "Float": 0.4
+    },
+    "COM_FLTMODE2": {
+      "Int": 11
+    },
+    "PWM_AUX_MAX10": {
+      "Int": 2000
+    },
+    "RC18_REV": {
+      "Float": 1.0
+    },
+    "CAL_GYRO2_ID": {
+      "Int": 4325386
+    },
+    "PWM_MAIN_FUNC7": {
+      "Int": 0
+    },
+    "CAL_MAG1_ROT": {
+      "Int": 0
+    },
+    "UAVCAN_SV_MIN6": {
+      "Int": 0
+    },
+    "EKF2_BETA_NOISE": {
+      "Float": 0.3
+    },
+    "CAL_MAG0_XSCALE": {
+      "Float": 1.0497894
+    },
+    "COM_ARM_MAG_STR": {
+      "Int": 2
+    },
+    "CAL_GYRO1_ROT": {
+      "Int": -1
+    },
+    "PWM_AUX_MAX11": {
+      "Int": 2000
+    },
+    "CA_ROTOR2_PX": {
+      "Float": 0.43
+    },
+    "CA_ROTOR9_KM": {
+      "Float": 0.05
+    },
+    "BAT_V_LOAD_DROP": {
+      "Float": 0.3
+    },
+    "RC15_MIN": {
+      "Float": 1000.0
+    },
+    "SDLOG_PROFILE": {
+      "Int": 1
+    },
+    "SDLOG_MISSION": {
+      "Int": 0
+    },
+    "PWM_AUX_DIS11": {
+      "Int": 1000
+    },
+    "BAT2_I_CHANNEL": {
+      "Int": -1
+    },
+    "CAL_ACC2_ZOFF": {
+      "Float": 0.17461227
+    },
+    "MPC_Z_P": {
+      "Float": 1.0
+    },
+    "MAV_0_MODE": {
+      "Int": 0
+    },
+    "SYS_FAC_CAL_MODE": {
+      "Int": 0
+    },
+    "RC1_REV": {
+      "Float": 1.0
+    },
+    "UAVCAN_NODE_ID": {
+      "Int": 1
+    },
+    "COM_OBC_LOSS_T": {
+      "Float": 5.0
+    },
+    "CAL_MAG0_YOFF": {
+      "Float": 0.28282797
+    },
+    "GPS_1_CONFIG": {
+      "Int": 201
+    },
+    "EKF2_MAG_E_NOISE": {
+      "Float": 0.001
+    },
+    "MAV_0_CONFIG": {
+      "Int": 101
+    },
+    "RC4_MIN": {
+      "Float": 1049.0
+    },
+    "MAV_SIK_RADIO_ID": {
+      "Int": 0
+    },
+    "CA_R2_SLEW": {
+      "Float": 0.0
+    },
+    "MAV_SYS_ID": {
+      "Int": 1
+    },
+    "SYS_CAL_ACCEL": {
+      "Int": 0
+    },
+    "MPC_LAND_RADIUS": {
+      "Float": 1000.0
+    },
+    "CAL_MAG0_ZODIAG": {
+      "Float": 0.058165316
+    },
+    "CA_ROTOR7_PY": {
+      "Float": 0.0
+    },
+    "CP_GUIDE_ANG": {
+      "Float": 30.0
+    },
+    "PWM_AUX_MIN3": {
+      "Int": 1000
+    },
+    "PWM_MAIN_MAX5": {
+      "Int": 1900
+    },
+    "UAVCAN_EC_FUNC7": {
+      "Int": 0
+    },
+    "CAL_MAG3_ID": {
+      "Int": 0
+    },
+    "COM_ARM_CHK_ESCS": {
+      "Int": 0
+    },
+    "SENS_EN_BATT": {
+      "Int": 0
+    },
+    "PWM_AUX_MAX1": {
+      "Int": 2000
+    },
+    "UAVCAN_SUB_MAG": {
+      "Int": 1
+    },
+    "UAVCAN_EC_FUNC1": {
+      "Int": 0
+    },
+    "SENS_EN_SHT3X": {
+      "Int": 0
+    },
+    "FLW_TGT_RS": {
+      "Float": 0.1
+    },
+    "CAL_MAG_SIDES": {
+      "Int": 63
+    },
+    "RC_MAP_YAW": {
+      "Int": 4
+    },
+    "EKF2_BARO_CTRL": {
+      "Int": 1
+    },
+    "COM_POWER_COUNT": {
+      "Int": 1
+    },
+    "RC_MAP_KILL_SW": {
+      "Int": 0
+    },
+    "CAL_ACC0_YOFF": {
+      "Float": -0.024119273
+    },
+    "FD_IMB_PROP_THR": {
+      "Int": 30
+    },
+    "SENS_EN_TF02PRO": {
+      "Int": 0
+    },
+    "MAV_HB_FORW_EN": {
+      "Int": 1
+    },
+    "SENS_EN_SF1XX": {
+      "Int": 0
+    },
+    "UAVCAN_SV_FUNC3": {
+      "Int": 0
+    },
+    "COM_ARM_EKF_HGT": {
+      "Float": 1.0
+    },
+    "UAVCAN_SV_FAIL6": {
+      "Int": -1
+    },
+    "CA_ROTOR9_AX": {
+      "Float": 0.0
+    },
+    "GPS_UBX_DYNMODEL": {
+      "Int": 6
+    },
+    "RC9_REV": {
+      "Float": 1.0
+    },
+    "PWM_AUX_REV": {
+      "Int": 0
+    },
+    "MC_ACRO_R_MAX": {
+      "Float": 720.0
+    },
+    "SENS_EN_MPDT": {
+      "Int": 0
+    },
+    "PWM_AUX_FAIL7": {
+      "Int": -1
+    },
+    "FLW_TGT_ALT_M": {
+      "Int": 0
+    },
+    "COM_RCL_EXCEPT": {
+      "Int": 0
+    },
+    "EKF2_FUSE_BETA": {
+      "Int": 0
+    },
+    "CA_ROTOR0_AZ": {
+      "Float": -1.0
+    },
+    "CA_ROTOR6_AX": {
+      "Float": 0.0
+    },
+    "EKF2_REQ_EPV": {
+      "Float": 5.0
+    },
+    "PWM_AUX_DIS5": {
+      "Int": 1000
+    },
+    "MAV_0_RATE": {
+      "Int": 1200
+    },
+    "SDLOG_DIRS_MAX": {
+      "Int": 0
+    },
+    "CA_ROTOR6_PX": {
+      "Float": 0.0
+    },
+    "COM_FLT_PROFILE": {
+      "Int": 0
+    },
+    "MAV_COMP_ID": {
+      "Int": 1
+    },
+    "BAT_CRIT_THR": {
+      "Float": 0.07
+    },
+    "EKF2_MAG_ACCLIM": {
+      "Float": 0.5
+    },
+    "EKF2_RNG_A_IGATE": {
+      "Float": 1.0
+    },
+    "SENS_ULAND_CFG": {
+      "Int": 0
+    },
+    "MPC_ALT_MODE": {
+      "Int": 0
+    },
+    "SENS_BOARD_ROT": {
+      "Int": 0
+    },
+    "BAT2_V_CHANNEL": {
+      "Int": -1
+    },
+    "EKF2_BARO_GATE": {
+      "Float": 5.0
+    },
+    "PWM_MAIN_DIS8": {
+      "Int": 1000
+    },
+    "COM_FLT_TIME_MAX": {
+      "Int": -1
+    },
+    "PWM_MAIN_FAIL3": {
+      "Int": -1
+    },
+    "MPC_JERK_AUTO": {
+      "Float": 4.0
+    },
+    "MPC_Z_VEL_D_ACC": {
+      "Float": 0.0
+    },
+    "IMU_GYRO_CAL_EN": {
+      "Int": 1
+    },
+    "COM_POS_FS_DELAY": {
+      "Int": 1
+    },
+    "UAVCAN_EC_MAX8": {
+      "Int": 8191
+    },
+    "PWM_MAIN_FAIL2": {
+      "Int": -1
+    },
+    "CAL_GYRO1_ZOFF": {
+      "Float": 0.007890964
+    },
+    "COM_LKDOWN_TKO": {
+      "Float": 3.0
+    },
+    "COM_OBL_RC_ACT": {
+      "Int": 0
+    },
+    "MC_ACRO_P_MAX": {
+      "Float": 720.0
+    },
+    "RC_INPUT_PROTO": {
+      "Int": 2
+    },
+    "CAL_ACC0_YSCALE": {
+      "Float": 0.992268
+    },
+    "SENS_EN_PMW3901": {
+      "Int": 0
+    },
+    "PWM_AUX_MIN8": {
+      "Int": 1000
+    },
+    "COM_ARM_MAG_ANG": {
+      "Int": 60
+    },
+    "SENS_TFMINI_CFG": {
+      "Int": 0
+    },
+    "NAV_FW_ALTL_RAD": {
+      "Float": 5.0
+    },
+    "THR_MDL_FAC": {
+      "Float": 0.0
+    },
+    "SENS_EN_PAW3902": {
+      "Int": 0
+    },
+    "CBRK_USB_CHK": {
+      "Int": 197848
+    },
+    "PWM_AUX_FUNC4": {
+      "Int": 0
+    },
+    "CA_ROTOR8_AZ": {
+      "Float": -1.0
+    },
+    "CAL_ACC0_XOFF": {
+      "Float": -0.07878167
+    },
+    "MPC_Z_VEL_P_ACC": {
+      "Float": 4.0
+    },
+    "MC_ROLLRATE_P": {
+      "Float": 0.15
+    },
+    "RC15_DZ": {
+      "Float": 0.0
+    },
+    "EKF2_EV_CTRL": {
+      "Int": 15
+    },
+    "EKF2_IMU_POS_Z": {
+      "Float": 0.0
+    },
+    "BAT1_V_EMPTY": {
+      "Float": 3.6
+    },
+    "EKF2_GYR_NOISE": {
+      "Float": 0.015
+    },
+    "UAVCAN_SV_FUNC8": {
+      "Int": 0
+    },
+    "RC5_DZ": {
+      "Float": 10.0
+    },
+    "PWM_AUX_DIS10": {
+      "Int": 1000
+    },
+    "EKF2_REQ_EPH": {
+      "Float": 3.0
+    },
+    "COM_OF_LOSS_T": {
+      "Float": 1.0
+    },
+    "MC_AIRMODE": {
+      "Int": 0
+    },
+    "RC10_REV": {
+      "Float": 1.0
+    },
+    "SYS_AUTOSTART": {
+      "Int": 6001
+    },
+    "RC3_DZ": {
+      "Float": 10.0
+    },
+    "COM_CPU_MAX": {
+      "Float": 95.0
+    },
+    "RC13_DZ": {
+      "Float": 0.0
+    },
+    "MC_ORBIT_RAD_MAX": {
+      "Float": 1000.0
+    },
+    "CAL_GYRO1_ID": {
+      "Int": 3932170
+    },
+    "MSP_OSD_CONFIG": {
+      "Int": 0
+    },
+    "UAVCAN_SV_MAX3": {
+      "Int": 1000
+    },
+    "BAT1_N_CELLS": {
+      "Int": 6
+    },
+    "GPS_PITCH_OFFSET": {
+      "Float": 0.0
+    },
+    "PWM_MAIN_MAX1": {
+      "Int": 1900
+    },
+    "PWM_AUX_MAX5": {
+      "Int": 2000
+    },
+    "CAL_ACC1_ID": {
+      "Int": 3932170
+    },
+    "FD_EXT_ATS_TRIG": {
+      "Int": 1900
+    },
+    "BAT2_A_PER_V": {
+      "Float": 36.367516
+    },
+    "RC12_DZ": {
+      "Float": 0.0
+    },
+    "CA_ROTOR1_AZ": {
+      "Float": -1.0
+    },
+    "SENS_SF0X_CFG": {
+      "Int": 0
+    },
+    "RC18_MIN": {
+      "Float": 1000.0
+    },
+    "MBE_LEARN_GAIN": {
+      "Float": 18.0
+    },
+    "RC_MAP_LOITER_SW": {
+      "Int": 0
+    },
+    "CAL_BARO2_ID": {
+      "Int": 0
+    },
+    "CA_ROTOR4_AZ": {
+      "Float": -1.0
+    },
+    "EKF2_ASP_DELAY": {
+      "Float": 100.0
+    },
+    "FD_FAIL_P": {
+      "Int": 60
+    },
+    "EKF2_SEL_IMU_VEL": {
+      "Float": 2.0
+    },
+    "CA_R9_SLEW": {
+      "Float": 0.0
+    },
+    "CAL_MAG0_YCOMP": {
+      "Float": 0.0
+    },
+    "CA_ROTOR7_CT": {
+      "Float": 6.5
+    },
+    "MPC_MAN_Y_TAU": {
+      "Float": 0.08
+    },
+    "SYS_HAS_GPS": {
+      "Int": 1
+    },
+    "MC_ROLLRATE_K": {
+      "Float": 1.0
+    },
+    "MPC_Z_V_AUTO_UP": {
+      "Float": 3.0
+    },
+    "CA_R5_SLEW": {
+      "Float": 0.0
+    },
+    "CAL_MAG1_ZSCALE": {
+      "Float": 1.0
+    },
+    "PWM_AUX_FUNC11": {
+      "Int": 0
+    },
+    "BAT1_SOURCE": {
+      "Int": 0
+    },
+    "RC_MAP_ARM_SW": {
+      "Int": 0
+    },
+    "BAT_V_CHARGED": {
+      "Float": 4.05
+    },
+    "PWM_AUX_FUNC2": {
+      "Int": 0
+    },
+    "CAL_ACC1_ZSCALE": {
+      "Float": 0.9892547
+    },
+    "GPS_UBX_CFG_INTF": {
+      "Int": 0
+    },
+    "CA_ROTOR4_CT": {
+      "Float": 6.5
+    },
+    "CA_ROTOR9_AZ": {
+      "Float": -1.0
+    },
+    "CAL_MAG0_ROT": {
+      "Int": -1
+    },
+    "CAL_ACC1_XSCALE": {
+      "Float": 0.9909331
+    },
+    "EV_TSK_STAT_DIS": {
+      "Int": 0
+    },
+    "UAVCAN_EC_FUNC4": {
+      "Int": 0
+    },
+    "RC11_MIN": {
+      "Float": 1000.0
+    },
+    "GPS_UBX_MODE": {
+      "Int": 0
+    },
+    "UAVCAN_SV_MAX6": {
+      "Int": 1000
+    },
+    "WV_YRATE_MAX": {
+      "Float": 90.0
+    },
+    "UAVCAN_EC_FAIL6": {
+      "Int": -1
+    },
+    "MC_PITCHRATE_MAX": {
+      "Float": 220.0
+    },
+    "MC_YAWRATE_P": {
+      "Float": 0.2
+    },
+    "BAT1_V_DIV": {
+      "Float": 18.1
+    },
+    "CA_FAILURE_MODE": {
+      "Int": 0
+    },
+    "CA_ROTOR4_KM": {
+      "Float": 0.05
+    },
+    "EKF2_EV_NOISE_MD": {
+      "Int": 0
+    },
+    "RC_MAP_STAB_SW": {
+      "Int": 0
+    },
+    "COM_FORCE_SAFETY": {
+      "Int": 0
+    },
+    "CAL_MAG0_XCOMP": {
+      "Float": 0.0
+    },
+    "MC_YAWRATE_FF": {
+      "Float": 0.0
+    },
+    "SDLOG_MODE": {
+      "Int": 0
+    },
+    "MC_ROLL_P": {
+      "Float": 6.5
+    },
+    "RC2_TRIM": {
+      "Float": 1544.0
+    },
+    "GPS_DUMP_COMM": {
+      "Int": 0
+    },
+    "SYS_CAL_TMAX": {
+      "Int": 10
+    },
+    "RC14_REV": {
+      "Float": 1.0
+    },
+    "CAL_GYRO2_ROT": {
+      "Int": -1
+    },
+    "UAVCAN_SV_MAX2": {
+      "Int": 1000
+    },
+    "RC_RSSI_PWM_MIN": {
+      "Int": 1000
+    },
+    "UAVCAN_EC_MIN6": {
+      "Int": 1
+    },
+    "PWM_AUX_FAIL4": {
+      "Int": -1
+    },
+    "BAT_AVRG_CURRENT": {
+      "Float": 15.0
+    },
+    "RTL_TIME_MARGIN": {
+      "Int": 100
+    },
+    "COM_ARM_HFLT_CHK": {
+      "Int": 1
+    },
+    "GF_COUNT": {
+      "Int": -1
+    },
+    "CA_ROTOR1_PX": {
+      "Float": 0.0
+    },
+    "PWM_AUX_MAX3": {
+      "Int": 2000
+    },
+    "FW_PSP_OFF": {
+      "Float": 0.0
+    },
+    "COM_ARM_IMU_GYR": {
+      "Float": 0.25
+    },
+    "UAVCAN_SV_FUNC6": {
+      "Int": 0
+    },
+    "CA_ROTOR7_KM": {
+      "Float": 0.05
+    },
+    "RC1_DZ": {
+      "Float": 10.0
+    },
+    "UAVCAN_SV_MAX5": {
+      "Int": 1000
+    },
+    "UAVCAN_EC_MIN7": {
+      "Int": 1
+    },
+    "PWM_AUX_MIN7": {
+      "Int": 1000
+    },
+    "CA_ROTOR7_AY": {
+      "Float": 0.0
+    },
+    "RTL_LOITER_RAD": {
+      "Float": 80.0
+    },
+    "COM_ARM_MIS_REQ": {
+      "Int": 0
+    },
+    "SENS_EN_THERMAL": {
+      "Int": -1
+    },
+    "EKF2_GPS_P_NOISE": {
+      "Float": 0.5
+    },
+    "EKF2_OF_QMIN": {
+      "Int": 1
+    },
+    "EKF2_IMU_POS_X": {
+      "Float": 0.0
+    },
+    "IMU_GYRO_NF0_FRQ": {
+      "Float": 0.0
+    },
+    "RC13_MIN": {
+      "Float": 1000.0
+    },
+    "RC_MAP_POSCTL_SW": {
+      "Int": 0
+    },
+    "EKF2_PCOEF_XN": {
+      "Float": 0.0
+    },
+    "UAVCAN_EC_REV": {
+      "Int": 0
+    },
+    "COM_ARM_AUTH_REQ": {
+      "Int": 0
+    },
+    "PWM_MAIN_MAX3": {
+      "Int": 1900
+    },
+    "COM_MOT_TEST_EN": {
+      "Int": 1
+    },
+    "PWM_AUX_FUNC8": {
+      "Int": 0
+    },
+    "RC_MAP_PARAM2": {
+      "Int": 0
+    },
+    "UAVCAN_SV_MAX4": {
+      "Int": 1000
+    },
+    "CA_ROTOR6_AZ": {
+      "Float": -1.0
+    },
+    "IMU_GYRO_DNF_HMC": {
+      "Int": 3
+    },
+    "MOT_SLEW_MAX": {
+      "Float": 0.0
+    },
+    "RC_MAP_ROLL": {
+      "Int": 1
+    },
+    "EKF2_BARO_NOISE": {
+      "Float": 3.5
+    },
+    "EKF2_GBIAS_INIT": {
+      "Float": 0.1
+    },
+    "EKF2_BARO_DELAY": {
+      "Float": 0.0
+    },
+    "FD_ACT_MOT_C2T": {
+      "Float": 2.0
+    },
+    "HTE_THR_RANGE": {
+      "Float": 0.2
+    },
+    "UAVCAN_EC_FUNC8": {
+      "Int": 0
+    },
+    "CBRK_VTOLARMING": {
+      "Int": 0
+    },
+    "SYS_AUTOCONFIG": {
+      "Int": 0
+    },
+    "SYS_CAL_TDEL": {
+      "Int": 24
+    },
+    "CA_R4_SLEW": {
+      "Float": 0.0
+    },
+    "MPC_ACC_UP_MAX": {
+      "Float": 4.0
+    },
+    "CBRK_IO_SAFETY": {
+      "Int": 22027
+    },
+    "EKF2_EV_POS_Y": {
+      "Float": 0.0
+    },
+    "MC_PITCHRATE_P": {
+      "Float": 0.15
+    },
+    "RC_MAP_MODE_SW": {
+      "Int": 0
+    },
+    "FD_ESCS_EN": {
+      "Int": 1
+    },
+    "UAVCAN_EC_MIN4": {
+      "Int": 1
+    },
+    "MAV_HASH_CHK_EN": {
+      "Int": 1
+    },
+    "SENS_EN_PX4FLOW": {
+      "Int": 0
+    },
+    "SENS_GPS_MASK": {
+      "Int": 7
+    },
+    "CAL_MAG1_ZODIAG": {
+      "Float": 0.0
+    },
+    "CAL_MAG1_YODIAG": {
+      "Float": 0.0
+    },
+    "PWM_MAIN_FAIL5": {
+      "Int": -1
+    },
+    "MIS_DIST_1WP": {
+      "Float": 900.0
+    },
+    "MC_AT_RISE_TIME": {
+      "Float": 0.14
+    },
+    "PWM_AUX_MAX7": {
+      "Int": 2000
+    },
+    "RC17_MIN": {
+      "Float": 1000.0
+    },
+    "MPC_ACC_DOWN_MAX": {
+      "Float": 3.0
+    },
+    "MC_MAN_TILT_TAU": {
+      "Float": 0.0
+    },
+    "UAVCAN_SUB_FLOW": {
+      "Int": 0
+    },
+    "PWM_AUX_MAX8": {
+      "Int": 2000
+    },
+    "MAV_PROTO_VER": {
+      "Int": 0
+    },
+    "CA_SV3_SLEW": {
+      "Float": 0.0
+    },
+    "UAVCAN_SV_FAIL4": {
+      "Int": -1
+    },
+    "UAVCAN_EC_MIN5": {
+      "Int": 1
+    },
+    "PWM_MAIN_FAIL4": {
+      "Int": -1
+    },
+    "COM_POSCTL_NAVL": {
+      "Int": 0
+    },
+    "RC_RSSI_PWM_MAX": {
+      "Int": 2000
+    },
+    "MPC_THR_XY_MARG": {
+      "Float": 0.3
+    },
+    "CA_ROTOR0_PY": {
+      "Float": 0.5
+    },
+    "TEL_BST_EN": {
+      "Int": 0
+    },
+    "UAVCAN_LGT_ANTCL": {
+      "Int": 2
+    },
+    "UAVCAN_LGT_LAND": {
+      "Int": 0
+    },
+    "EKF2_ANGERR_INIT": {
+      "Float": 0.1
+    },
+    "RC_MAP_FLTMODE": {
+      "Int": 5
+    },
+    "SYS_DM_BACKEND": {
+      "Int": 0
+    },
+    "CA_R11_SLEW": {
+      "Float": 0.0
+    },
+    "EKF2_AVEL_DELAY": {
+      "Float": 5.0
+    },
+    "RC9_TRIM": {
+      "Float": 1494.0
+    },
+    "UAVCAN_EC_FAIL2": {
+      "Int": -1
+    },
+    "RC_MAP_THROTTLE": {
+      "Int": 3
+    },
+    "PWM_MAIN_DIS3": {
+      "Int": 1000
+    },
+    "CA_ROTOR11_PX": {
+      "Float": 0.0
+    },
+    "PWM_AUX_FUNC1": {
+      "Int": 0
+    },
+    "RC5_MAX": {
+      "Float": 1944.0
+    },
+    "EKF2_REQ_PDOP": {
+      "Float": 2.5
+    },
+    "RC_MAP_RATT_SW": {
+      "Int": 0
+    },
+    "RC15_MAX": {
+      "Float": 2000.0
+    },
+    "MAV_TYPE": {
+      "Int": 13
+    },
+    "CAM_CAP_FBACK": {
+      "Int": 0
+    },
+    "EKF2_SEL_ERR_RED": {
+      "Float": 0.2
+    },
+    "PWM_MAIN_MIN2": {
+      "Int": 1100
+    },
+    "SENS_BOARD_Y_OFF": {
+      "Float": -2.4520154
+    },
+    "CA_ROTOR9_PX": {
+      "Float": 0.0
+    },
+    "CAL_ACC2_YOFF": {
+      "Float": -0.15651265
+    },
+    "SDLOG_BOOT_BAT": {
+      "Int": 0
+    },
+    "PWM_AUX_FAIL5": {
+      "Int": -1
+    },
+    "UAVCAN_EC_MAX2": {
+      "Int": 8191
+    },
+    "MPC_THR_MIN": {
+      "Float": 0.12
+    },
+    "SYS_VEHICLE_RESP": {
+      "Float": -0.4
+    },
+    "UAVCAN_EC_FAIL5": {
+      "Int": -1
+    },
+    "CAL_GYRO0_ID": {
+      "Int": 3670026
+    },
+    "RC11_REV": {
+      "Float": 1.0
+    },
+    "CA_SV1_SLEW": {
+      "Float": 0.0
+    },
+    "MPC_LAND_ALT1": {
+      "Float": 10.0
+    },
+    "MPC_ACC_HOR_MAX": {
+      "Float": 5.0
+    },
+    "LNDMC_XY_VEL_MAX": {
+      "Float": 1.5
+    },
+    "PWM_AUX_DIS9": {
+      "Int": 1000
+    },
+    "RC_MAP_GEAR_SW": {
+      "Int": 0
+    },
+    "EKF2_DRAG_CTRL": {
+      "Int": 0
+    },
+    "PLD_HACC_RAD": {
+      "Float": 0.2
+    },
+    "RC17_TRIM": {
+      "Float": 1500.0
+    },
+    "RC9_DZ": {
+      "Float": 0.0
+    },
+    "EKF2_OF_GATE": {
+      "Float": 3.0
+    },
+    "NAV_MIN_LTR_ALT": {
+      "Float": -1.0
+    },
+    "IMU_GYRO_DNF_MIN": {
+      "Float": 25.0
+    },
+    "CA_SV4_SLEW": {
+      "Float": 0.0
+    },
+    "MAV_0_FLOW_CTRL": {
+      "Int": 2
+    },
+    "COM_ARM_AUTH_TO": {
+      "Float": 1.0
+    },
+    "CA_ROTOR10_PX": {
+      "Float": 0.0
+    },
+    "CAL_ACC1_PRIO": {
+      "Int": 50
+    },
+    "EKF2_NOAID_NOISE": {
+      "Float": 10.0
+    },
+    "CA_ROTOR4_PZ": {
+      "Float": 0.0
+    },
+    "COM_FAIL_ACT_T": {
+      "Float": 5.0
+    },
+    "EKF2_GSF_TAS": {
+      "Float": 15.0
+    },
+    "CA_ROTOR6_AY": {
+      "Float": 0.0
+    },
+    "CA_ROTOR5_AZ": {
+      "Float": -1.0
+    },
+    "COM_VEL_FS_EVH": {
+      "Float": 1.0
+    },
+    "RC5_REV": {
+      "Float": 1.0
+    },
+    "CAL_ACC2_ROT": {
+      "Int": -1
+    },
+    "RC1_TRIM": {
+      "Float": 1522.0
+    },
+    "MPC_THR_CURVE": {
+      "Int": 0
+    },
+    "MC_YAWRATE_MAX": {
+      "Float": 200.0
+    },
+    "RC_MAP_PARAM1": {
+      "Int": 0
+    },
+    "RC_TRANS_TH": {
+      "Float": 0.75
+    },
+    "LND_FLIGHT_T_LO": {
+      "Int": -1961890652
+    },
+    "PWM_AUX_FUNC7": {
+      "Int": 0
+    },
+    "HTE_ACC_GATE": {
+      "Float": 3.0
+    },
+    "CAL_MAG1_YSCALE": {
+      "Float": 1.0
+    },
+    "RC_CRSF_PRT_CFG": {
+      "Int": 0
+    },
+    "CAL_ACC1_YSCALE": {
+      "Float": 0.9924464
+    },
+    "DSHOT_MIN": {
+      "Float": 0.055
+    },
+    "RC12_MAX": {
+      "Float": 2000.0
+    },
+    "CAL_GYRO0_ZOFF": {
+      "Float": -0.01385491
+    },
+    "SYS_STCK_EN": {
+      "Int": 1
+    },
+    "COM_HOME_EN": {
+      "Int": 1
+    },
+    "GPS_2_CONFIG": {
+      "Int": 0
+    },
+    "EKF2_GPS_CTRL": {
+      "Int": 7
+    },
+    "MPC_VEL_MANUAL": {
+      "Float": 10.0
+    },
+    "EKF2_OF_QMIN_GND": {
+      "Int": 0
+    },
+    "CAL_MAG1_ZOFF": {
+      "Float": -0.35905176
+    },
+    "EKF2_RNG_A_VMAX": {
+      "Float": 1.0
+    },
+    "UAVCAN_SV_DIS6": {
+      "Int": 500
+    },
+    "COM_SPOOLUP_TIME": {
+      "Float": 1.0
+    },
+    "CA_ROTOR8_AX": {
+      "Float": 0.0
+    },
+    "UAVCAN_EC_MAX1": {
+      "Int": 8191
+    },
+    "CA_R1_SLEW": {
+      "Float": 0.0
+    },
+    "RC_MAP_PITCH": {
+      "Int": 2
+    },
+    "CAL_MAG1_XOFF": {
+      "Float": -0.18457435
+    },
+    "EKF2_IMU_POS_Y": {
+      "Float": 0.0
+    },
+    "TEL_FRSKY_CONFIG": {
+      "Int": 0
+    },
+    "RC3_TRIM": {
+      "Float": 1049.0
+    },
+    "RC14_TRIM": {
+      "Float": 1500.0
+    },
+    "VTO_LOITER_ALT": {
+      "Float": 80.0
+    },
+    "PWM_MAIN_FUNC4": {
+      "Int": 104
+    },
+    "UAVCAN_SV_FAIL1": {
+      "Int": -1
+    },
+    "CA_ROTOR4_AX": {
+      "Float": 0.0
+    },
+    "FLW_TGT_DST": {
+      "Float": 8.0
+    },
+    "UAVCAN_EC_FUNC3": {
+      "Int": 0
+    },
+    "CAL_GYRO1_XOFF": {
+      "Float": 0.021384805
+    },
+    "PWM_AUX_MAX2": {
+      "Int": 2000
+    },
+    "PWM_AUX_DIS2": {
+      "Int": 1000
+    },
+    "RC4_TRIM": {
+      "Float": 1499.0
+    },
+    "MC_YAWRATE_I": {
+      "Float": 0.1
+    },
+    "LNDMC_ROT_MAX": {
+      "Float": 20.0
+    },
+    "PWM_AUX_MIN1": {
+      "Int": 1000
+    },
+    "PWM_MAIN_FUNC6": {
+      "Int": 106
+    },
+    "CAL_AIR_TUBED_MM": {
+      "Float": 1.5
+    },
+    "RC_FAILS_THR": {
+      "Int": 0
+    },
+    "UAVCAN_SV_FUNC1": {
+      "Int": 0
+    },
+    "UAVCAN_SUB_BARO": {
+      "Int": 0
+    },
+    "EKF2_GRAV_NOISE": {
+      "Float": 1.0
+    },
+    "EKF2_REQ_NSATS": {
+      "Int": 6
+    },
+    "SENS_EN_VL53L0X": {
+      "Int": 0
+    },
+    "MPC_THR_HOVER": {
+      "Float": 0.5
+    },
+    "RC13_REV": {
+      "Float": 1.0
+    },
+    "SENS_BOARD_X_OFF": {
+      "Float": -3.382423
+    },
+    "UAVCAN_EC_FAIL8": {
+      "Int": -1
+    },
+    "EKF2_WIND_NSD": {
+      "Float": 0.01
+    },
+    "MIS_TKO_LAND_REQ": {
+      "Int": 0
+    },
+    "HTE_VZ_THR": {
+      "Float": 2.0
+    },
+    "MPC_TILTMAX_LND": {
+      "Float": 12.0
+    },
+    "RTL_LAND_DELAY": {
+      "Float": 0.0
+    },
+    "EKF2_ABL_TAU": {
+      "Float": 0.5
+    },
+    "EKF2_GPS_V_NOISE": {
+      "Float": 0.3
+    },
+    "CAL_GYRO2_YOFF": {
+      "Float": 0.0014085991
+    },
+    "CA_ROTOR0_CT": {
+      "Float": 6.5
+    },
+    "RC_PORT_CONFIG": {
+      "Int": 0
+    },
+    "CA_ROTOR4_PY": {
+      "Float": 0.25
+    },
+    "UAVCAN_EC_MAX6": {
+      "Int": 8191
+    },
+    "CAL_ACC2_ID": {
+      "Int": 4259850
+    },
+    "PWM_AUX_MIN2": {
+      "Int": 1000
+    },
+    "SENS_EN_MS5525DS": {
+      "Int": 0
+    },
+    "EKF2_MAG_CHECK": {
+      "Int": 1
+    },
+    "PWM_MAIN_DIS1": {
+      "Int": 1000
+    },
+    "MPC_THR_MAX": {
+      "Float": 1.0
+    },
+    "ASPD_SCALE_1": {
+      "Float": 1.0
+    },
+    "PWM_AUX_FUNC9": {
+      "Int": 0
+    },
+    "MC_ROLLRATE_D": {
+      "Float": 0.003
+    },
+    "CA_ROTOR8_AY": {
+      "Float": 0.0
+    },
+    "CA_ROTOR7_AZ": {
+      "Float": -1.0
+    },
+    "EKF2_MAG_YAWLIM": {
+      "Float": 0.2
+    },
+    "EKF2_REQ_SACC": {
+      "Float": 0.5
+    },
+    "RC16_REV": {
+      "Float": 1.0
+    },
+    "RTL_CONE_ANG": {
+      "Int": 45
+    },
+    "UAVCAN_SV_MIN3": {
+      "Int": 0
+    },
+    "PWM_AUX_MIN5": {
+      "Int": 1000
+    },
+    "RTL_RETURN_ALT": {
+      "Float": 5.0
+    },
+    "UAVCAN_BITRATE": {
+      "Int": 1000000
+    },
+    "CA_ROTOR3_PZ": {
+      "Float": 0.0
+    },
+    "MPC_YAW_MODE": {
+      "Int": 0
+    },
+    "COM_FLIGHT_UUID": {
+      "Int": 32
+    },
+    "MAV_USEHILGPS": {
+      "Int": 0
+    },
+    "RC18_MAX": {
+      "Float": 2000.0
+    },
+    "DSHOT_3D_ENABLE": {
+      "Int": 0
+    },
+    "EKF2_OF_N_MAX": {
+      "Float": 0.5
+    },
+    "SENS_DPRES_OFF": {
+      "Float": 0.0
+    },
+    "CAL_MAG1_XCOMP": {
+      "Float": 0.0
+    },
+    "RC6_DZ": {
+      "Float": 10.0
+    },
+    "MPC_VELD_LP": {
+      "Float": 5.0
+    },
+    "EKF2_MCOEF": {
+      "Float": 0.15
+    },
+    "MPC_Z_VEL_I_ACC": {
+      "Float": 2.0
+    },
+    "MPC_XY_MAN_EXPO": {
+      "Float": 0.6
+    },
+    "EKF2_EVV_NOISE": {
+      "Float": 0.1
+    },
+    "UAVCAN_SV_FUNC4": {
+      "Int": 0
+    },
+    "RC_MAP_FAILSAFE": {
+      "Int": 0
+    },
+    "PWM_MAIN_DIS2": {
+      "Int": 1000
+    },
+    "BAT_V_OFFS_CURR": {
+      "Float": 0.0
+    },
+    "RC_RSSI_PWM_CHAN": {
+      "Int": 0
+    },
+    "MC_ACRO_EXPO": {
+      "Float": 0.69
+    },
+    "SENS_EN_TRANGER": {
+      "Int": 0
+    },
+    "MPC_XY_P": {
+      "Float": 0.95
+    },
+    "CA_ROTOR7_PZ": {
+      "Float": 0.0
+    },
+    "HTE_VXY_THR": {
+      "Float": 10.0
+    },
+    "SENS_EN_MB12XX": {
+      "Int": 0
+    },
+    "EKF2_GPS_P_GATE": {
+      "Float": 5.0
+    },
+    "EKF2_RNG_DELAY": {
+      "Float": 5.0
+    },
+    "CA_ROTOR11_AY": {
+      "Float": 0.0
+    },
+    "COM_DISARM_PRFLT": {
+      "Float": 10.0
+    },
+    "MC_YAWRATE_D": {
+      "Float": 0.0
+    },
+    "PWM_MAIN_DIS4": {
+      "Int": 1000
+    },
+    "RC10_MAX": {
+      "Float": 1944.0
+    },
+    "SENS_BARO_QNH": {
+      "Float": 1013.25
+    },
+    "UAVCAN_LGT_STROB": {
+      "Int": 1
+    },
+    "UAVCAN_LGT_NAV": {
+      "Int": 3
+    },
+    "SENS_MAG_AUTOCAL": {
+      "Int": 1
+    },
+    "COM_HLDL_LOSS_T": {
+      "Int": 120
+    },
+    "CA_ROTOR9_PZ": {
+      "Float": 0.0
+    },
+    "MAV_1_CONFIG": {
+      "Int": 0
+    },
+    "SYS_MC_EST_GROUP": {
+      "Int": 2
+    },
+    "RC_MAP_MAN_SW": {
+      "Int": 0
+    },
+    "TC_G_ENABLE": {
+      "Int": 0
+    },
+    "SENS_BARO_RATE": {
+      "Float": 20.0
+    },
+    "MIS_LND_ABRT_ALT": {
+      "Int": 30
+    },
+    "GF_MAX_HOR_DIST": {
+      "Float": 0.0
+    },
+    "PWM_MAIN_FAIL8": {
+      "Int": -1
+    },
+    "CA_ROTOR1_PZ": {
+      "Float": 0.0
+    },
+    "RC7_MAX": {
+      "Float": 2000.0
+    },
+    "UAVCAN_SV_REV": {
+      "Int": 0
+    },
+    "MIS_PD_TO": {
+      "Float": 5.0
+    },
+    "RC1_MIN": {
+      "Float": 1072.0
+    },
+    "SYS_FAILURE_EN": {
+      "Int": 0
+    },
+    "COM_ARM_IMU_ACC": {
+      "Float": 0.7
+    },
+    "MC_ROLLRATE_I": {
+      "Float": 0.2
+    },
+    "EKF2_ARSP_THR": {
+      "Float": 0.0
+    },
+    "RC14_MAX": {
+      "Float": 2000.0
+    },
+    "COM_DL_LOSS_T": {
+      "Int": 10
+    },
+    "RC1_MAX": {
+      "Float": 1971.0
+    },
+    "COM_IMB_PROP_ACT": {
+      "Int": 0
+    },
+    "LNDMC_TRIG_TIME": {
+      "Float": 1.0
+    },
+    "PWM_MAIN_TIM2": {
+      "Int": 400
+    },
+    "COM_FLTMODE4": {
+      "Int": 2
+    },
+    "RC14_DZ": {
+      "Float": 0.0
+    },
+    "PWM_MAIN_FAIL7": {
+      "Int": -1
+    },
+    "PWM_SBUS_MODE": {
+      "Int": 0
+    },
+    "IMU_GYRO_NF1_BW": {
+      "Float": 20.0
+    },
+    "CA_ROTOR1_KM": {
+      "Float": 0.05
+    },
+    "CA_R3_SLEW": {
+      "Float": 0.0
+    },
+    "EKF2_RNG_NOISE": {
+      "Float": 0.1
+    },
+    "IMU_GYRO_CUTOFF": {
+      "Float": 40.0
+    },
+    "UAVCAN_PUB_RTCM": {
+      "Int": 0
+    },
+    "EKF2_MAG_TYPE": {
+      "Int": 0
+    },
+    "SYS_HAS_MAG": {
+      "Int": 1
+    },
+    "EKF2_PCOEF_XP": {
+      "Float": 0.0
+    },
+    "CAL_ACC1_XOFF": {
+      "Float": -0.060333967
+    },
+    "RC_KILLSWITCH_TH": {
+      "Float": 0.75
+    },
+    "UAVCAN_EC_FAIL4": {
+      "Int": -1
+    },
+    "UAVCAN_EC_FAIL1": {
+      "Int": -1
+    },
+    "CA_ROTOR11_AX": {
+      "Float": 0.0
+    },
+    "MPC_XY_VEL_ALL": {
+      "Float": -10.0
+    },
+    "CA_ROTOR8_KM": {
+      "Float": 0.05
+    },
+    "RC2_DZ": {
+      "Float": 10.0
+    },
+    "RC_RETURN_TH": {
+      "Float": 0.75
+    },
+    "EKF2_IMU_CTRL": {
+      "Int": 3
+    },
+    "GPS_1_PROTOCOL": {
+      "Int": 1
+    },
+    "PWM_AUX_FUNC3": {
+      "Int": 0
+    },
+    "UAVCAN_SUB_ICE": {
+      "Int": 0
+    },
+    "CAL_ACC0_ZSCALE": {
+      "Float": 1.0000716
+    },
+    "SYS_HAS_NUM_DIST": {
+      "Int": 0
+    },
+    "SYS_RGB_MAXBRT": {
+      "Float": 1.0
+    },
+    "EKF2_ASPD_MAX": {
+      "Float": 20.0
+    },
+    "SENS_EN_PAA3905": {
+      "Int": 0
+    },
+    "CAL_MAG0_ID": {
+      "Int": 396825
+    },
+    "COM_FLTMODE6": {
+      "Int": 1
+    },
+    "RC17_REV": {
+      "Float": 1.0
+    },
+    "COM_ARM_WO_GPS": {
+      "Int": 1
+    },
+    "EKF2_EVA_NOISE": {
+      "Float": 0.1
+    },
+    "CP_GO_NO_DATA": {
+      "Int": 0
+    },
+    "RC16_MIN": {
+      "Float": 1000.0
+    },
+    "RC6_REV": {
+      "Float": 1.0
+    },
+    "CA_ROTOR2_KM": {
+      "Float": -0.05
+    },
+    "MC_YR_INT_LIM": {
+      "Float": 0.3
+    },
+    "CA_ROTOR5_CT": {
+      "Float": 6.5
+    },
+    "SENS_EN_SDP3X": {
+      "Int": 0
+    },
+    "MPC_TKO_RAMP_T": {
+      "Float": 3.0
+    },
+    "CAL_MAG0_YSCALE": {
+      "Float": 1.001694
+    },
+    "MC_PITCHRATE_I": {
+      "Float": 0.2
+    },
+    "MPC_JERK_MAX": {
+      "Float": 8.0
+    },
+    "PWM_AUX_DIS6": {
+      "Int": 1000
+    },
+    "RC16_MAX": {
+      "Float": 2000.0
+    },
+    "COM_ARM_EKF_VEL": {
+      "Float": 0.5
+    },
+    "UAVCAN_EC_FAIL7": {
+      "Int": -1
+    },
+    "PWM_AUX_DIS7": {
+      "Int": 1000
+    },
+    "MPC_ACC_HOR": {
+      "Float": 3.0
+    },
+    "CA_ROTOR8_PX": {
+      "Float": 0.0
+    },
+    "COM_RC_OVERRIDE": {
+      "Int": 1
+    },
+    "BAT2_V_DIV": {
+      "Float": 18.1
+    },
+    "RTL_PLD_MD": {
+      "Int": 0
+    },
+    "CA_ROTOR10_PZ": {
+      "Float": 0.0
+    },
+    "COM_TAKEOFF_ACT": {
+      "Int": 0
+    },
+    "UAVCAN_SV_MIN8": {
+      "Int": 0
+    },
+    "TEL_HOTT_CONFIG": {
+      "Int": 0
+    },
+    "MPC_VEL_MAN_SIDE": {
+      "Float": -1.0
+    },
+    "NAV_RCL_ACT": {
+      "Int": 2
+    },
+    "CAL_MAG3_ROT": {
+      "Int": -1
+    },
+    "MAN_ARM_GESTURE": {
+      "Int": 1
+    },
+    "COM_RC_STICK_OV": {
+      "Float": 30.0
+    },
+    "MPC_Z_VEL_MAX_UP": {
+      "Float": 3.0
+    },
+    "EKF2_SYNT_MAG_Z": {
+      "Int": 0
+    },
+    "COM_FLTMODE1": {
+      "Int": 11
+    },
+    "CBRK_FLIGHTTERM": {
+      "Int": 121212
+    },
+    "SYS_HAS_BARO": {
+      "Int": 1
+    },
+    "MIS_YAW_TMT": {
+      "Float": -1.0
+    },
+    "SENS_MAG_AUTOROT": {
+      "Int": 1
+    },
+    "IMU_GYRO_RATEMAX": {
+      "Int": 800
+    },
+    "NAV_LOITER_RAD": {
+      "Float": 80.0
+    },
+    "SENS_LEDDAR1_CFG": {
+      "Int": 0
+    },
+    "EKF2_TERR_MASK": {
+      "Int": 3
+    },
+    "MPC_LAND_RC_HELP": {
+      "Int": 0
+    },
+    "RC12_MIN": {
+      "Float": 1000.0
+    },
+    "EKF2_OF_POS_Z": {
+      "Float": 0.0
+    },
+    "MC_BAT_SCALE_EN": {
+      "Int": 0
+    },
+    "PLD_SRCH_ALT": {
+      "Float": 10.0
+    },
+    "PWM_AUX_MIN11": {
+      "Int": 1000
+    },
+    "MIS_TAKEOFF_ALT": {
+      "Float": 2.5
+    },
+    "PWM_AUX_FAIL3": {
+      "Int": -1
+    },
+    "EKF2_ABL_LIM": {
+      "Float": 0.4
+    },
+    "UAVCAN_SV_FAIL5": {
+      "Int": -1
+    },
+    "EKF2_EV_QMIN": {
+      "Int": 0
+    },
+    "CA_ROTOR3_AX": {
+      "Float": 0.0
+    },
+    "RTL_TYPE": {
+      "Int": 0
+    },
+    "EKF2_GPS_POS_Y": {
+      "Float": 0.0
+    },
+    "RC15_REV": {
+      "Float": 1.0
+    },
+    "CA_ROTOR10_KM": {
+      "Float": 0.05
+    },
+    "UAVCAN_EC_FAIL3": {
+      "Int": -1
+    },
+    "EKF2_OF_DELAY": {
+      "Float": 20.0
+    },
+    "CAL_ACC0_ROT": {
+      "Int": -1
+    }
+  },
+  "changed_params": {},
+  "dropout_details": [
+    {
+      "timestamp": 3025435505,
+      "duration": 0
+    },
+    {
+      "timestamp": 3025426806,
+      "duration": 97
+    }
+  ]
+}
