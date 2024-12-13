@@ -1,10 +1,10 @@
 [package]
-name = "ulog-parser"
+name = "ulog-rs"
 version = "0.1.0"
 edition = "2021"
 authors = ["Brian Stearns <brianw.stearns@gmail.com>"]
 description = "A parser for the PX4 ULog file format"
-repository = "https://github.com/BWStearns/ulog-parser"
+repository = "https://github.com/BWStearns/ulog-rs"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
 

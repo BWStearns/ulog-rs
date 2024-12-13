@@ -156,6 +156,7 @@ pub struct FlagBitsMessage {
 /// types of input sources, such as files, network streams, or in-memory buffers.
 pub struct ULogParser<R: Read> {
     reader: R,
+    _version: u8,
     _current_timestamp: u64,
     dropout_details: DropoutStats,
     header: ULogHeader,
@@ -178,13 +179,13 @@ impl<R: Read> ULogParser<R> {
         if magic != [0x55, 0x4C, 0x6F, 0x67, 0x01, 0x12, 0x35] {
             return Err(ULogError::InvalidMagic);
         }
-
+        log::info!("Magic bytes: {:?}", magic);
         // Read version
         let version = reader.read_u8()?;
-        if version != 1 {
+        if version > 1 {
             return Err(ULogError::UnsupportedVersion(version));
         }
-
+        log::info!("ULog version: {}", version);
         // Read timestamp
         let timestamp = reader.read_u64::<LittleEndian>()?;
 
@@ -193,6 +194,7 @@ impl<R: Read> ULogParser<R> {
         Ok(ULogParser {
             reader,
             _current_timestamp: timestamp,
+            _version: version,
             dropout_details: DropoutStats {
                 total_drops: 0,
                 total_duration_ms: 0,
@@ -218,7 +220,7 @@ impl<R: Read> ULogParser<R> {
     fn _dump_next_bytes(&mut self, count: usize) -> Result<(), ULogError> {
         let mut buf = vec![0u8; count];
         self.reader.read_exact(&mut buf)?;
-        println!("Next {} bytes: {:?}", count, buf);
+        log::debug!("Next {} bytes: {:?}", count, buf);
         Ok(())
     }
 
@@ -395,37 +397,71 @@ impl<R: Read> ULogParser<R> {
     /// initial parameters, and multi messages. Once the first subscription message is
     /// encountered, the method breaks out of the loop to continue parsing the data section.
     pub fn parse_definitions(&mut self) -> Result<(), ULogError> {
-        // Read flag bits message first
-        let header = self.read_message_header()?;
-        if header.msg_type != b'B' {
-            return Err(ULogError::InvalidMessageType(header.msg_type));
+        log::info!("Parsing definitions section");
+
+        // Only read flag bits message for version 1
+        if self._version > 0 {
+            let header = self.read_message_header()?;
+            log::debug!(
+                "Flag bits header: msg_size={}, msg_type={}",
+                header.msg_size,
+                header.msg_type as char
+            );
+            if header.msg_type != b'B' {
+                return Err(ULogError::InvalidMessageType(header.msg_type));
+            }
+            let _flag_bits = self.read_flag_bits()?;
         }
-        let _flag_bits = self.read_flag_bits()?;
 
         // Parse definition section until we hit data section
         loop {
             let header = self.read_message_header()?;
+            // Debug print the raw bytes
+            log::debug!(
+                "Message header: size={}, type={}({:#x})",
+                header.msg_size,
+                header.msg_type as char,
+                header.msg_type
+            );
+
             match header.msg_type {
-                b'I' => self.handle_info_message(&header)?,
-                b'F' => self.handle_format_message(&header)?,
-                b'P' => self.handle_initial_param(&header)?,
-                b'M' => self.handle_multi_message(&header)?,
-                b'Q' => self.handle_default_parameter()?,
+                b'I' => {
+                    log::debug!("Handling Info message");
+                    self.handle_info_message(&header)?
+                }
+                b'F' => {
+                    log::debug!("Handling Format message");
+                    self.handle_format_message(&header)?
+                }
+                b'P' => {
+                    log::debug!("Handling Parameter message");
+                    self.handle_initial_param(&header)?
+                }
                 b'A' => {
-                    // This is the first message in the data section
-                    // Process the first subscription message but don't break yet
+                    log::debug!("Handling Subscription message");
                     self.handle_subscription_message(&header)?;
-                    // Now break to continue parsing data section
                     break;
                 }
+                b'D' => {
+                    log::debug!("Found Data message before subscription!");
+                    return Err(ULogError::ParseError(
+                        "Data message found before subscription".to_string(),
+                    ));
+                }
                 _ => {
-                    // Skip unknown message types
-                    let mut buf = vec![0u8; header.msg_size as usize];
-                    self.reader.read_exact(&mut buf)?;
+                    log::debug!("Unknown message type: {}", header.msg_type as char);
+                    // Before skipping, let's dump the next few bytes to see what's going on
+                    let mut peek_buf = vec![0u8; std::cmp::min(16, header.msg_size as usize)];
+                    self.reader.read_exact(&mut peek_buf)?;
+                    log::debug!("Next {} bytes: {:?}", peek_buf.len(), peek_buf);
+
+                    if header.msg_size > 16 {
+                        let mut remainder = vec![0u8; header.msg_size as usize - 16];
+                        self.reader.read_exact(&mut remainder)?;
+                    }
                 }
             }
         }
-
         Ok(())
     }
 
