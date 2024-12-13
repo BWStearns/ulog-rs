@@ -163,6 +163,7 @@ impl<R: Read> ULogParser<R> {
     }
 
     pub fn handle_info_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        println!("Handling info message");
         match self.read_info_message() {
             Ok(info) => {
                 self.info_messages.insert(info.key.clone(), info);

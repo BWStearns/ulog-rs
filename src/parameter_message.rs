@@ -172,10 +172,14 @@ impl<R: Read> ULogParser<R> {
     pub fn handle_initial_param(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
         match self.read_param_message(header.msg_size) {
             Ok(param) => {
+                log::debug!("Initial parameter: {}", param.key);
                 self.initial_params.insert(param.key.clone(), param);
                 Ok(())
             }
-            Err(e) => Err(e),
+            Err(e) => {
+                log::warn!("Error reading initial parameter: {}", e);
+                Err(e)
+            }
         }
     }
 
