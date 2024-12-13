@@ -38,10 +38,6 @@ impl<R: Read> ULogParser<R> {
 
     pub fn handle_subscription_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
         let subscription = self.read_subscription(header.msg_size)?;
-        println!(
-            "Found subscription: {} (msg_id: {})",
-            subscription.message_name, subscription.msg_id
-        );
         self.subscriptions.insert(subscription.msg_id, subscription);
         Ok(())
     }

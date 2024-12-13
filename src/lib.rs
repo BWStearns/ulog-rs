@@ -271,10 +271,7 @@ impl<R: Read> ULogParser<R> {
                 Ok(ULogValue::CharArray(s))
             }
             _ => {
-                println!(
-                    "Invalid type/size combination: {:?}, {:?}",
-                    value_type, array_size
-                );
+                log::error!("Unsupported type/size combination");
                 Err(ULogError::ParseError(
                     "Invalid type/size combination".to_string(),
                 ))
@@ -290,7 +287,7 @@ impl<R: Read> ULogParser<R> {
 
     /// Check if a byte represents a valid ULog message type
     fn is_valid_message_type(msg_type: u8) -> bool {
-        let valid = matches!(
+        let is_valid = matches!(
             msg_type,
             b'A' | // Add message
             b'R' | // Remove message
@@ -304,15 +301,10 @@ impl<R: Read> ULogParser<R> {
             b'S' | // Synchronization
             b'O' // Dropout
         );
-        if !valid {
-            println!(
-                "Found message type: {} (dec) / 0x{:02X} (hex) / {} (ascii)",
-                msg_type,
-                msg_type,
-                std::char::from_u32(msg_type as u32).unwrap_or('?')
-            );
+        if !is_valid {
+            log::warn!("Invalid message type: {}", msg_type);
         }
-        valid
+        is_valid
     }
 
     pub fn parse_definitions(&mut self) -> Result<(), ULogError> {
@@ -351,19 +343,13 @@ impl<R: Read> ULogParser<R> {
     }
 
     pub fn parse_data(&mut self) -> Result<(), ULogError> {
-        println!("Data section messages:");
         loop {
             match self.read_message_header() {
                 Ok(header) => {
                     if !Self::is_valid_message_type(header.msg_type) {
-                        println!(
-                            "Invalid message type: {} ({})",
-                            header.msg_type as char, header.msg_type
-                        );
                         return Ok(());
                     }
                     if header.msg_size > MAX_MESSAGE_SIZE {
-                        println!("Invalid message size: {} bytes", header.msg_size);
                         return Ok(());
                     }
 
@@ -387,7 +373,7 @@ impl<R: Read> ULogParser<R> {
                     }
                 }
                 Err(ULogError::Io(e)) if e.kind() == io::ErrorKind::UnexpectedEof => {
-                    println!("Reached end of file while reading header");
+                    log::info!("Reached end of file");
                     break;
                 }
                 Err(e) => return Err(e),
@@ -403,11 +389,15 @@ impl<R: Read> ULogParser<R> {
     }
 
     #[allow(dead_code)]
-    fn parse_reader(reader: R) -> Result<ULogParser<R>, ULogError> {
+    pub fn parse_reader(reader: R) -> Result<ULogParser<R>, ULogError> {
         let mut parser = ULogParser::new(reader)?;
         parser.parse_definitions()?;
         parser.parse_data()?;
         Ok(parser)
+    }
+
+    pub fn last_timestamp(&self) -> u64 {
+        self._current_timestamp
     }
 }
 

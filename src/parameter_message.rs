@@ -147,18 +147,11 @@ impl<R: Read> ULogParser<R> {
     pub fn handle_default_parameter(&mut self) -> Result<(), ULogError> {
         match self.read_default_parameter() {
             Ok(default_param) => {
-                println!(
-                    "Default parameter: {} = {:?} (types: {:?})",
-                    default_param.key, default_param.value, default_param.default_types
-                );
                 self.default_params
                     .insert(default_param.key.clone(), default_param);
                 Ok(())
             }
-            Err(e) => {
-                println!("Error reading default parameter: {}", e);
-                Err(e)
-            }
+            Err(e) => Err(e),
         }
     }
 
@@ -182,25 +175,18 @@ impl<R: Read> ULogParser<R> {
                 self.initial_params.insert(param.key.clone(), param);
                 Ok(())
             }
-            Err(e) => {
-                println!("Error reading initial parameter: {}", e);
-                Err(e)
-            }
+            Err(e) => Err(e),
         }
     }
 
     pub fn handle_parameter_change(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
         match self.read_param_message(header.msg_size) {
             Ok(param) => {
-                println!("Parameter change: {} = {:?}", param.key, param.value);
                 let parameter_changes = self.changed_params.entry(param.key.clone()).or_default();
                 parameter_changes.push(param);
                 Ok(())
             }
-            Err(e) => {
-                println!("Error reading parameter change: {}", e);
-                Err(e)
-            }
+            Err(e) => Err(e),
         }
     }
 }

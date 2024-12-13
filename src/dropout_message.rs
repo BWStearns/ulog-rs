@@ -38,16 +38,12 @@ impl<R: Read> ULogParser<R> {
     pub fn handle_dropout(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
         match self.read_dropout_message(header.msg_size) {
             Ok(dropout) => {
-                println!("Dropout: {:?}", dropout);
                 self.dropout_details.total_drops += 1;
                 self.dropout_details.total_duration_ms += dropout.duration as u32;
                 self.dropout_details.dropouts.push(dropout);
                 Ok(())
             }
-            Err(e) => {
-                println!("Error reading dropout: {}", e);
-                Err(e)
-            }
+            Err(e) => Err(e),
         }
     }
 

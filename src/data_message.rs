@@ -120,7 +120,6 @@ impl<R: Read> ULogParser<R> {
         // Handle any remaining bytes in the message
         if bytes_read < msg_size as usize {
             let remaining = msg_size as usize - bytes_read;
-            println!("Message had {} trailing bytes, skipping", remaining);
             let mut remaining_bytes = vec![0u8; remaining];
             self.reader.read_exact(&mut remaining_bytes)?;
         } else if bytes_read > msg_size as usize {

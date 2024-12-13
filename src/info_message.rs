@@ -214,14 +214,10 @@ impl<R: Read> ULogParser<R> {
     pub fn handle_info_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
         match self.read_info_message() {
             Ok(info) => {
-                println!("Info message: {:?}", info.clone());
                 self.info_messages.insert(info.key.clone(), info);
                 Ok(())
             }
-            Err(e) => {
-                println!("Error reading info message: {}", e);
-                Err(e)
-            }
+            Err(e) => Err(e),
         }
     }
 }
