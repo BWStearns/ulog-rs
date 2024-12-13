@@ -1,3 +1,9 @@
+use std::{collections::HashMap, io::Read};
+
+use byteorder::{LittleEndian, ReadBytesExt};
+
+use crate::{MessageHeader, ULogError, ULogParser, ULogType};
+
 // Format message field
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Field {
@@ -7,72 +13,11 @@ pub struct Field {
 }
 
 #[derive(Debug, Clone)]
-pub struct FormatMessage {
-    pub name: String,
-    pub fields: Vec<Field>,
-}
-
-#[derive(Debug, Clone)]
 pub struct InfoMessage {
     pub key: String,               // The name part of the key (e.g., "ver_hw")
     pub value_type: ULogValueType, // The type part (e.g., "char[10]")
     pub array_size: Option<usize>, // Size if it's an array type
     pub value: ULogValue,          // The actual value
-}
-
-#[derive(Debug, Clone)]
-pub struct MultiMessage {
-    pub is_continued: bool,
-    pub key: String,
-    pub value_type: ULogValueType,
-    pub array_size: Option<usize>,
-    pub value: ULogValue,
-}
-
-pub trait MultiMessageCombiner {
-    fn combine_values(&self) -> Option<ULogValue>;
-}
-
-impl MultiMessageCombiner for Vec<MultiMessage> {
-    fn combine_values(&self) -> Option<ULogValue> {
-        if self.is_empty() {
-            return None;
-        }
-
-        // All messages should have the same type, so use the first one's type
-        let first = &self[0];
-        match &first.value {
-            ULogValue::CharArray(_) => {
-                // Combine string values
-                let combined: String = self
-                    .iter()
-                    .filter_map(|msg| {
-                        if let ULogValue::CharArray(s) = &msg.value {
-                            Some(s.as_str())
-                        } else {
-                            None
-                        }
-                    })
-                    .collect();
-                Some(ULogValue::CharArray(combined))
-            }
-            ULogValue::UInt8Array(_arr) => {
-                // Combine byte arrays
-                let mut combined = Vec::new();
-                for msg in self {
-                    if let ULogValue::UInt8Array(arr) = &msg.value {
-                        combined.extend_from_slice(arr);
-                    }
-                }
-                Some(ULogValue::UInt8Array(combined))
-            }
-            // Add other array types as needed...
-            _ => {
-                println!("Unsupported multi message value type");
-                None
-            }
-        }
-    }
 }
 
 impl InfoMessage {
@@ -216,4 +161,63 @@ pub enum ULogValue {
     CharArray(String),                 // Special case: char arrays are strings
     Message(Vec<ULogValue>),           // For nested message types
     MessageArray(Vec<Vec<ULogValue>>), // For arrays of nested message types
+}
+
+impl<R: Read> ULogParser<R> {
+    pub fn info_messages(&self) -> &HashMap<String, InfoMessage> {
+        &self.info_messages
+    }
+
+    // In read_info_message, modify the value reading section:
+    pub fn read_info_message(&mut self) -> Result<InfoMessage, ULogError> {
+        let key_len = self.reader.read_u8()? as usize;
+        let key_str = self.read_string(key_len)?;
+
+        // Split the key string into type and name
+        let parts: Vec<&str> = key_str.splitn(2, ' ').collect();
+        if parts.len() != 2 {
+            return Err(ULogError::ParseError(
+                "Invalid info message key format".to_string(),
+            ));
+        }
+
+        let (ulog_type, array_size) = Self::parse_type_string(parts[0])?;
+        let key_name = parts[1].to_string();
+
+        // Handle basic types and message types differently
+        let value = match &ulog_type {
+            ULogType::Basic(value_type) => {
+                // Now we correctly pass a ULogValueType
+                self.read_typed_value(value_type, array_size)?
+            }
+            ULogType::Message(_) => {
+                return Err(ULogError::ParseError(
+                    "Message types not allowed in info messages".to_string(),
+                ));
+            }
+        };
+
+        // Extract the value_type for storage in InfoMessage
+        let value_type = match ulog_type {
+            ULogType::Basic(vt) => vt,
+            _ => unreachable!(), // We've already handled the Message case above
+        };
+
+        Ok(InfoMessage {
+            key: key_name,
+            value_type,
+            array_size,
+            value,
+        })
+    }
+
+    pub fn handle_info_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
+        match self.read_info_message() {
+            Ok(info) => {
+                self.info_messages.insert(info.key.clone(), info);
+                Ok(())
+            }
+            Err(e) => Err(e),
+        }
+    }
 }
