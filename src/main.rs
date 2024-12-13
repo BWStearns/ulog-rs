@@ -10,15 +10,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create parser instance
     let parser = ulog_rs::ULogParser::parse_reader(file)?;
     // Print header information
-    // println!("ULog Header:");
-    // println!("  Version: {}", parser.header().version);
-    // println!("  Timestamp: {} μs", parser.header().timestamp);
-    // println!("  Final Timestamp: {} μs", parser.last_timestamp());
+    println!("ULog Header:");
+    println!("  Version: {}", parser.header().version);
+    println!("  Timestamp: {} μs", parser.header().timestamp);
+    println!("  Final Timestamp: {} μs", parser.last_timestamp());
     for message in parser.logged_messages() {
-        // println!("[{}] {}", message.timestamp, message.message);
+        println!("[{}] {}", message.timestamp, message.message);
     }
 
-    // println!("\n\n######################\n\n");
+    println!("\n\n######################\n\n");
 
     let file_path = home.join("Downloads").join("sample.ulg");
     // Open the file
@@ -26,12 +26,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create parser instance
     let new_parser = ulog_rs::ULogParser::parse_reader(file)?;
     // Print header information
-    // println!("ULog Header:");
-    // println!("  Version: {}", new_parser.header().version);
-    // println!("  Timestamp: {} μs", new_parser.header().timestamp);
-    // println!("  Final Timestamp: {} μs", new_parser.last_timestamp());
+    println!("ULog Header:");
+    println!("  Version: {}", new_parser.header().version);
+    println!("  Timestamp: {} μs", new_parser.header().timestamp);
+    println!("  Final Timestamp: {} μs", new_parser.last_timestamp());
     for message in new_parser.logged_messages() {
-        // println!("[{}] {}", message.timestamp, message.message);
+        println!("[{}] {}", message.timestamp, message.message);
     }
     // Parse definition section
     // Join the initial params into a single string
