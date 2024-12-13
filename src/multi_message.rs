@@ -52,7 +52,7 @@ impl MultiMessageCombiner for Vec<MultiMessage> {
             }
             // Add other array types as needed...
             _ => {
-                println!("Unsupported multi message value type");
+                log::error!("Unsupported multi message value type");
                 None
             }
         }
@@ -73,7 +73,7 @@ impl<R: Read> ULogParser<R> {
                         existing_msgs.push(multi_msg);
                     } else {
                         // This is an error case - got a continuation without a start
-                        println!(
+                        log::warn!(
                             "Warning: Got continuation message without initial message for key: {}",
                             multi_msg.clone().key
                         );
@@ -90,7 +90,7 @@ impl<R: Read> ULogParser<R> {
                 Ok(())
             }
             Err(e) => {
-                println!("Error reading multi message: {}", e);
+                log::error!("Error reading multi message: {}", e);
                 Err(e)
             }
         }

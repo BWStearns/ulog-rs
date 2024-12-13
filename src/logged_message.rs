@@ -48,17 +48,11 @@ impl<R: Read> ULogParser<R> {
     pub fn handle_logged_message(&mut self, header: &MessageHeader) -> Result<(), ULogError> {
         match self.read_logged_message(header.msg_size) {
             Ok(log_msg) => {
-                println!(
-                    "[{}][{} μs] {}",
-                    Self::log_level_to_string(log_msg.log_level),
-                    log_msg.timestamp,
-                    log_msg.message
-                );
                 self.logged_messages.push(log_msg);
                 Ok(())
             }
             Err(e) => {
-                println!("Error reading logged message: {}", e);
+                log::error!("Error reading logged message: {}", e);
                 Err(e)
             }
         }
