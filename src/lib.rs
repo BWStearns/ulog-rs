@@ -179,12 +179,14 @@ impl<R: Read> ULogParser<R> {
             return Err(ULogError::InvalidMagic);
         }
 
+        log::info!("Magic bytes: {:?}", magic);
         // Read version
         let version = reader.read_u8()?;
-        if version != 1 {
+        if version > 1 {
             return Err(ULogError::UnsupportedVersion(version));
         }
 
+        log::info!("ULog version: {}", version);
         // Read timestamp
         let timestamp = reader.read_u64::<LittleEndian>()?;
 
@@ -395,6 +397,7 @@ impl<R: Read> ULogParser<R> {
     /// initial parameters, and multi messages. Once the first subscription message is
     /// encountered, the method breaks out of the loop to continue parsing the data section.
     pub fn parse_definitions(&mut self) -> Result<(), ULogError> {
+        log::info!("Parsing definitions section");
         // Read flag bits message first
         let header = self.read_message_header()?;
         if header.msg_type != b'B' {
@@ -404,6 +407,7 @@ impl<R: Read> ULogParser<R> {
 
         // Parse definition section until we hit data section
         loop {
+            log::info!("Parsing definition section");
             let header = self.read_message_header()?;
             match header.msg_type {
                 b'I' => self.handle_info_message(&header)?,

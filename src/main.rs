@@ -4,7 +4,7 @@ use std::fs::File;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get the file path from the home directory
     let home = dirs::home_dir().expect("Could not find home directory");
-    let file_path = home.join("Downloads").join("sample-small.ulg");
+    let file_path = home.join("Downloads").join("sample.ulg");
     // Open the file
     let file = File::open(&file_path)?;
     // Create parser instance
