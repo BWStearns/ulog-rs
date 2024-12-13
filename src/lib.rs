@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 pub mod data_message;
 pub mod dropout_message;
 pub mod format_message;
