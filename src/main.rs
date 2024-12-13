@@ -2,9 +2,7 @@ use std::fs::File;
 // use std::path::Path;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Get the file path from the home directory
-    let home = dirs::home_dir().expect("Could not find home directory");
-    let file_path = home.join("Downloads").join("sample-small.ulg");
+    let file_path = "./test_data/sample-small.ulg";
     // Open the file
     let file = File::open(&file_path)?;
     // Create parser instance
@@ -20,7 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("\n\n######################\n\n");
 
-    let file_path = home.join("Downloads").join("sample.ulg");
+    let file_path = "./test_data/sample.ulg";
     // Open the file
     let file = File::open(&file_path)?;
     // Create parser instance
