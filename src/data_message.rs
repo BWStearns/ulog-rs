@@ -78,10 +78,15 @@ impl<R: Read> ULogParser<R> {
                 bytes_read += padding_size;
                 continue;
             }
-            let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
-            let (value, field_bytes) = match type_info {
+            if field.field_name.starts_with("control") && field.array_size > Some(1) {
+                println!("{:#?}", field);
+            }
+            let (mut type_info, array_size) = Self::parse_type_string(&field.field_type)?;
+            // type_info.array_size = field.array_size;
+
+            let (value, field_bytes) = match type_info.clone() {
                 ULogType::Basic(value_type) => {
-                    let value = self.read_typed_value(&value_type, array_size)?;
+                    let value = self.read_typed_value(&value_type, field.array_size)?;
                     let bytes = match &value {
                         ULogValue::BoolArray(v) => v.len(),
                         ULogValue::CharArray(s) => s.len(),
@@ -203,31 +208,33 @@ impl<R: Read> ULogParser<R> {
                 continue;
             }
 
+            let field_array_size = field.array_size.unwrap_or(1);
+
             let (type_info, array_size) = Self::parse_type_string(&field.field_type)?;
 
             let (value, bytes) = match type_info {
                 ULogType::Basic(value_type) => {
-                    let value = self.read_typed_value(&value_type, array_size)?;
+                    let value = self.read_typed_value(&value_type, field.array_size)?;
                     let bytes = match &value {
-                        ULogValue::BoolArray(v) => v.len(),
+                        ULogValue::BoolArray(_) => field_array_size,
                         ULogValue::CharArray(s) => s.len(),
-                        ULogValue::DoubleArray(v) => v.len() * 8,
-                        ULogValue::FloatArray(v) => v.len() * 4,
+                        ULogValue::DoubleArray(_) => field_array_size * 8,
+                        ULogValue::FloatArray(_) => field_array_size * 4,
                         ULogValue::Int16(_) | ULogValue::UInt16(_) => 2,
-                        ULogValue::Int16Array(v) => v.len() * 2,
+                        ULogValue::Int16Array(_) => field_array_size * 2,
                         ULogValue::Int32(_) | ULogValue::UInt32(_) | ULogValue::Float(_) => 4,
-                        ULogValue::Int32Array(v) => v.len() * 4,
+                        ULogValue::Int32Array(_) => field_array_size * 4,
                         ULogValue::Int64(_) | ULogValue::UInt64(_) | ULogValue::Double(_) => 8,
-                        ULogValue::Int64Array(v) => v.len() * 8,
+                        ULogValue::Int64Array(_) => field_array_size * 8,
                         ULogValue::Int8(_)
                         | ULogValue::UInt8(_)
                         | ULogValue::Bool(_)
                         | ULogValue::Char(_) => 1,
-                        ULogValue::Int8Array(v) => v.len(),
-                        ULogValue::UInt8Array(v) => v.len(),
-                        ULogValue::UInt16Array(v) => v.len() * 2,
-                        ULogValue::UInt32Array(v) => v.len() * 4,
-                        ULogValue::UInt64Array(v) => v.len() * 8,
+                        ULogValue::Int8Array(_) => field_array_size,
+                        ULogValue::UInt8Array(_) => field_array_size,
+                        ULogValue::UInt16Array(_) => field_array_size * 2,
+                        ULogValue::UInt32Array(_) => field_array_size * 4,
+                        ULogValue::UInt64Array(_) => field_array_size * 8,
                         _ => 0, // Should never happen for basic types
                     };
                     (value, bytes)
@@ -241,7 +248,8 @@ impl<R: Read> ULogParser<R> {
                         })?
                         .clone();
 
-                    if let Some(size) = array_size {
+                    if let Some(size) = field.array_size {
+                        println!("Reading some array bytes!!!!");
                         let mut array_values = Vec::with_capacity(size);
                         let mut array_bytes = 0;
                         for _ in 0..size {

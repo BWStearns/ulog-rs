@@ -332,17 +332,37 @@ impl<R: Read> ULogParser<R> {
             }
 
             // Array values
-            (ULogValueType::Int8, Some(size)) => {
+            (ULogValueType::Bool, Some(size)) => {
                 let mut values = vec![0u8; size];
-                self.reader.read_exact(values.as_mut_slice())?;
-                Ok(ULogValue::Int8Array(
-                    values.iter().map(|&x| x as i8).collect(),
+                self.reader.read_exact(&mut values)?;
+                Ok(ULogValue::BoolArray(
+                    values.iter().map(|&x| x != 0).collect(),
                 ))
+            }
+            (ULogValueType::UInt16, Some(size)) => {
+                let mut values = vec![0u16; size];
+                self.reader.read_u16_into::<LittleEndian>(&mut values)?;
+                Ok(ULogValue::UInt16Array(values))
+            }
+            (ULogValueType::UInt32, Some(size)) => {
+                let mut values = vec![0u32; size];
+                self.reader.read_u32_into::<LittleEndian>(&mut values)?;
+                Ok(ULogValue::UInt32Array(values))
+            }
+            (ULogValueType::Int8, Some(size)) => {
+                let mut values = vec![0i8; size];
+                self.reader.read_i8_into(&mut values)?;
+                Ok(ULogValue::Int8Array(values))
             }
             (ULogValueType::UInt8, Some(size)) => {
                 let mut values = vec![0u8; size];
                 self.reader.read_exact(&mut values)?;
                 Ok(ULogValue::UInt8Array(values))
+            }
+            (ULogValueType::Float, Some(size)) => {
+                let mut values = vec![0.0f32; size];
+                self.reader.read_f32_into::<LittleEndian>(&mut values)?;
+                Ok(ULogValue::FloatArray(values))
             }
             // Special case for char arrays - treat as strings
             (ULogValueType::Char, Some(size)) => {
@@ -354,15 +374,15 @@ impl<R: Read> ULogParser<R> {
                     .to_string();
                 Ok(ULogValue::CharArray(s))
             }
-            _ => {
+            ulog_value_type => {
                 log::error!("Unsupported type/size combination");
-                Err(ULogError::ParseError(
-                    "Invalid type/size combination".to_string(),
-                ))
+                Err(ULogError::ParseError(format!(
+                    "Invalid type/size combination: {:?}",
+                    ulog_value_type
+                )))
             }
         }
     }
-
     fn read_string(&mut self, len: usize) -> Result<String, ULogError> {
         let mut buf = vec![0u8; len];
         self.reader.read_exact(&mut buf)?;

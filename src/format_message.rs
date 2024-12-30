@@ -29,7 +29,6 @@ impl<R: Read> ULogParser<R> {
                 let mut parts = field.split_whitespace();
                 let type_part = parts.next().unwrap_or("");
                 let name_part = parts.next().unwrap_or("");
-
                 // Check if this is a padding field
                 if name_part.starts_with("_padding") {
                     // Parse the padding size from field name (format: _padding[N])

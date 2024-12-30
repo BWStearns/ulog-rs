@@ -1,4 +1,6 @@
 use std::fs::File;
+
+use ulog_rs::subscription_message::SubscriptionMessage;
 // use std::path::Path;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -15,22 +17,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for message in parser.logged_messages() {
         println!("[{}] {}", message.timestamp, message.message);
     }
+    // println!(":{:?}:", parser.formats());
+    // print!("{:?}", parser);
+    let actuator_motors: Vec<&SubscriptionMessage> = parser
+        .subscriptions()
+        .iter()
+        .filter(|x| x.1.message_name == "actuator_motors")
+        .map(|x| x.1)
+        .collect();
+
+    for am in actuator_motors {
+        println!("{:#?}", am)
+    }
 
     println!("\n\n######################\n\n");
 
-    let file_path = "./test_data/sample.ulg";
+    // let file_path = "./test_data/sample.ulg";
     // Open the file
-    let file = File::open(&file_path)?;
+    // let file = File::open(&file_path)?;
     // Create parser instance
-    let new_parser = ulog_rs::ULogParser::parse_reader(file)?;
+    // let new_parser = ulog_rs::ULogParser::parse_reader(file)?;
     // Print header information
-    println!("ULog Header:");
-    println!("  Version: {}", new_parser.header().version);
-    println!("  Timestamp: {} μs", new_parser.header().timestamp);
-    println!("  Final Timestamp: {} μs", new_parser.last_timestamp());
-    for message in new_parser.logged_messages() {
-        println!("[{}] {}", message.timestamp, message.message);
-    }
+    // println!("ULog Header:");
+    // println!("  Version: {}", new_parser.header().version);
+    // println!("  Timestamp: {} μs", new_parser.header().timestamp);
+    // println!("  Final Timestamp: {} μs", new_parser.last_timestamp());
+    // for message in new_parser.logged_messages() {
+    //     println!("[{}] {}", message.timestamp, message.message);
+    // }
     // Parse definition section
     // Join the initial params into a single string
     // let init_params_str = parser
