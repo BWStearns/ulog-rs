@@ -35,7 +35,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-ulog_rs = "0.1.0"
+ulog_rs = "0.0.1"
 ```
 
 ### Basic Example
