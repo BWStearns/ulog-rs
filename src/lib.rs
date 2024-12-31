@@ -89,6 +89,34 @@ pub enum ULogValue {
     MessageArray(Vec<Vec<ULogValue>>), // For arrays of nested message types
 }
 
+impl ULogValue {
+    pub fn calculate_size(&self) -> usize {
+        match self {
+            ULogValue::BoolArray(v) => v.len(),
+            ULogValue::CharArray(s) => s.len(),
+            ULogValue::DoubleArray(v) => v.len() * 8,
+            ULogValue::FloatArray(v) => v.len() * 4,
+            ULogValue::Int16(_) | ULogValue::UInt16(_) => 2,
+            ULogValue::Int16Array(v) => v.len() * 2,
+            ULogValue::Int32(_) | ULogValue::UInt32(_) | ULogValue::Float(_) => 4,
+            ULogValue::Int32Array(v) => v.len() * 4,
+            ULogValue::Int64(_) | ULogValue::UInt64(_) | ULogValue::Double(_) => 8,
+            ULogValue::Int64Array(v) => v.len() * 8,
+            ULogValue::Int8(_) | ULogValue::UInt8(_) | ULogValue::Bool(_) | ULogValue::Char(_) => 1,
+            ULogValue::Int8Array(v) => v.len(),
+            ULogValue::UInt8Array(v) => v.len(),
+            ULogValue::Message(map) => map.iter().map(|v| v.calculate_size()).sum(),
+            ULogValue::MessageArray(arr) => arr
+                .iter()
+                .map(|v| v.iter().map(|inner| inner.calculate_size()).sum::<usize>())
+                .sum(),
+            ULogValue::UInt16Array(vec) => vec.len() * 2,
+            ULogValue::UInt32Array(vec) => vec.len() * 4,
+            ULogValue::UInt64Array(vec) => vec.len() * 8,
+        }
+    }
+}
+
 #[derive(Debug, Error)]
 pub enum ULogError {
     #[error("IO error: {0}")]
