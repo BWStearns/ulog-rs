@@ -4,7 +4,7 @@ use byteorder::ReadBytesExt;
 
 use crate::{MessageHeader, ULogError, ULogParser, ULogType, ULogValue, ULogValueType};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ParameterMessage {
     pub key: String,
     pub value: ULogValue,

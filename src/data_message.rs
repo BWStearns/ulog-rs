@@ -78,9 +78,6 @@ impl<R: Read> ULogParser<R> {
                 bytes_read += padding_size;
                 continue;
             }
-            if field.field_name.starts_with("control") && field.array_size > Some(1) {
-                println!("{:#?}", field);
-            }
             let (mut type_info, array_size) = Self::parse_type_string(&field.field_type)?;
             // type_info.array_size = field.array_size;
 
@@ -249,7 +246,6 @@ impl<R: Read> ULogParser<R> {
                         .clone();
 
                     if let Some(size) = field.array_size {
-                        println!("Reading some array bytes!!!!");
                         let mut array_values = Vec::with_capacity(size);
                         let mut array_bytes = 0;
                         for _ in 0..size {

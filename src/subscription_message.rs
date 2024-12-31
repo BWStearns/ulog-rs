@@ -5,7 +5,7 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use crate::{format_message::FormatMessage, MessageHeader, ULogError, ULogParser, ULogValue};
 
 // Subscription message
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SubscriptionMessage {
     pub multi_id: u8,
     pub msg_id: u16,
