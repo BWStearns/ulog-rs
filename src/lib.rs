@@ -9,6 +9,7 @@ pub mod multi_message;
 pub mod parameter_message;
 pub mod subscription_message;
 pub mod tagged_logged_message;
+pub mod ulog;
 
 use byteorder::{LittleEndian, ReadBytesExt};
 use dropout_message::DropoutStats;
