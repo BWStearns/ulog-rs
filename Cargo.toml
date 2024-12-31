@@ -1,6 +1,6 @@
 [package]
 name = "ulog-rs"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 authors = ["Brian Stearns <brianw.stearns+crates@gmail.com>"]
 description = "A parser for the PX4 ULog file format"
