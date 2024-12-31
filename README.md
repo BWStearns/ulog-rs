@@ -6,12 +6,12 @@ A robust Rust implementation of a parser for the ULog file format, commonly used
 
 This project is currently in development, it basically works but I'll be making changes to the interface as I go.
 
-[x] Parse ULog files and extract all messages
-[ ] Make a nice interface for the parser (in progress)
-[ ] Documentation
-[ ] Add cli features for the binary (right now it just gives some summary data for a sanity check)
-[ ] Add tests (Parity tests are in progress, using pyulog for comparison. The holdup is munging the data to match the format from pyulog)
-[ ] Benchmarking
+- [x] Parse ULog files and extract all messages
+- [ ] Make a nice interface for the parser (in progress)
+- [ ] Documentation
+- [ ] Add cli features for the binary (right now it just gives some summary data for a sanity check)
+- [ ] Add tests (Parity tests are in progress, using pyulog for comparison. The holdup is munging the data to match the format from pyulog)
+- [ ] Benchmarking
 
 ## Features
 
