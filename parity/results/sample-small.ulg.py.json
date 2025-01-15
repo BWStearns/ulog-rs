@@ -3040,12 +3040,12 @@
   "changed_params": [],
   "dropout_details": [
     {
-      "timestamp": 0,
+      "timestamp": 3025435505,
       "duration": 0
     },
     {
-      "timestamp": 0,
-      "duration": 0
+      "timestamp": 3025435505,
+      "duration": 97
     }
   ]
 }
