@@ -74,7 +74,7 @@ pub fn profile_ulog<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::E
                 field.field_name.clone()
             };
 
-            field_counts.insert(field_name, subscription.data.len());
+            field_counts.insert(field_name, subscription.data[0].len());
         }
         profile
             .datasets

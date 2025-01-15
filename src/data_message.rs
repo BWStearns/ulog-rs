@@ -182,8 +182,7 @@ impl<R: Read> ULogParser<R> {
         self.subscriptions
             .get_mut(&msg_id)
             .unwrap()
-            .data
-            .push(data.data);
+            .insert_data(data.data);
         Ok(())
     }
 

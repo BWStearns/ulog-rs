@@ -890,20 +890,20 @@
   ],
   "dropout_details": [
     {
-      "timestamp": 0,
+      "timestamp": 112574774,
       "duration": 0
     },
     {
-      "timestamp": 0,
-      "duration": 0
+      "timestamp": 112574774,
+      "duration": 26
     },
     {
-      "timestamp": 0,
-      "duration": 0
+      "timestamp": 112614307,
+      "duration": 31
     },
     {
-      "timestamp": 0,
-      "duration": 0
+      "timestamp": 153855108,
+      "duration": 62
     }
   ]
 }

@@ -491,6 +491,9 @@ impl<R: Read> ULogParser<R> {
                     self.handle_subscription_message(&header)?;
                     break;
                 }
+                b'Q' => {
+                    self.handle_default_parameter()?;
+                }
                 _ => {
                     log::debug!("Unknown message type: {}", header.msg_type as char);
                     // Before skipping, let's dump the next few bytes to see what's going on

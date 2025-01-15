@@ -29,7 +29,7 @@ def profiler():
             'changed_params': u.changed_parameters,
             # Dropouts
             'dropout_details': [
-                {'timestamp': 0, 'duration': 0} for do in u.dropouts
+                {'timestamp': do.timestamp, 'duration': do.duration} for do in u.dropouts
             ],
         }
         pprint(profile)

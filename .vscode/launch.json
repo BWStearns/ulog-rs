@@ -1,22 +1,13 @@
 {
-    "version": "0.2.0", // VSCode debug config version
-    "configurations": [ // Array of debug configurations
+    "version": "0.2.0",
+    "configurations": [
         {
-            // Which debugger to use - LLDB is good for Rust
             "type": "lldb",
-            // Whether to launch a new program or attach to existing
             "request": "launch",
-            // Name shown in VSCode's debug dropdown menu
             "name": "Debug",
-            // Path to the compiled program to debug
-            // ${fileDirname} = directory of currently open file
-            // Assumes binary is in ../target/debug/ named same as source file
             "program": "${fileDirname}/../target/debug/${fileBasenameNoExtension}",
-            // Command line arguments to pass to program
             "args": [],
-            // Working directory for the debugger
             "cwd": "${workspaceRoot}",
-            // Languages to enable debugging for
             "sourceLanguages": [
                 "rust"
             ],
