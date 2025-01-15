@@ -61,5 +61,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    println!("{:#?}", ulog);
+
     Ok(())
 }

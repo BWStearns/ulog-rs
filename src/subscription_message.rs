@@ -14,6 +14,15 @@ pub struct SubscriptionMessage {
     pub format: FormatMessage,
 }
 
+impl SubscriptionMessage {
+    pub fn insert_data(&mut self, data: Vec<ULogValue>) {
+        // Iterate over the data and format fields, and insert the data into the data vector
+        for i in 0..data.len() {
+            self.data[i].push(data[i].clone());
+        }
+    }
+}
+
 impl<R: Read> ULogParser<R> {
     pub fn subscriptions(&self) -> &HashMap<u16, SubscriptionMessage> {
         &self.subscriptions
@@ -31,7 +40,8 @@ impl<R: Read> ULogParser<R> {
             multi_id,
             msg_id,
             message_name: name,
-            data: vec![],
+            // Initialize data as an empty vector of n empty vectors (n = number of fields in format)
+            data: vec![Vec::new(); format.fields.len()],
             format: format.clone(),
         })
     }

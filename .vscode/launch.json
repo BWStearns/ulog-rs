@@ -13,7 +13,9 @@
             // Assumes binary is in ../target/debug/ named same as source file
             "program": "${fileDirname}/../target/debug/${fileBasenameNoExtension}",
             // Command line arguments to pass to program
-            "args": [],
+            "args": [
+                "--file ./test_data/sample.ulg"
+            ],
             // Working directory for the debugger
             "cwd": "${workspaceRoot}",
             // Languages to enable debugging for
