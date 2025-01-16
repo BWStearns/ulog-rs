@@ -1,10 +1,11 @@
 use std::io::Read;
 
 use byteorder::{LittleEndian, ReadBytesExt};
+use serde_derive::Serialize;
 
 use crate::{MessageHeader, ULogError, ULogParser};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct LoggedMessage {
     pub log_level: u8,
     pub timestamp: u64,

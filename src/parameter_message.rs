@@ -1,22 +1,23 @@
 use std::{collections::HashMap, io::Read};
 
 use byteorder::ReadBytesExt;
+use serde_derive::Serialize;
 
 use crate::{MessageHeader, ULogError, ULogParser, ULogType, ULogValue, ULogValueType};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ParameterMessage {
     pub key: String,
     pub value: ULogValue,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum DefaultType {
     SystemWide = 1,    // 1<<0: system wide default
     Configuration = 2, // 1<<1: default for current configuration
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct DefaultParameterMessage {
     pub key: String,
     pub value: ULogValue,

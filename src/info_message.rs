@@ -1,18 +1,19 @@
 use std::{collections::HashMap, io::Read};
 
 use byteorder::ReadBytesExt;
+use serde_derive::Serialize;
 
 use crate::{MessageHeader, ULogError, ULogParser, ULogType, ULogValue, ULogValueType};
 
 // Format message field
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct Field {
     pub field_type: String,
     pub field_name: String,
     pub array_size: Option<usize>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct InfoMessage {
     pub key: String,               // The name part of the key (e.g., "ver_hw")
     pub value_type: ULogValueType, // The type part (e.g., "char[10]")

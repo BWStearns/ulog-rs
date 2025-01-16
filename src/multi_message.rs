@@ -1,10 +1,11 @@
 use std::{collections::HashMap, io::Read};
 
 use byteorder::ReadBytesExt;
+use serde_derive::Serialize;
 
 use crate::{MessageHeader, ULogError, ULogParser, ULogType, ULogValue, ULogValueType};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct MultiMessage {
     pub is_continued: bool,
     pub key: String,

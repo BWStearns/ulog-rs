@@ -18,6 +18,7 @@ use info_message::*;
 use logged_message::LoggedMessage;
 use multi_message::MultiMessage;
 use parameter_message::{DefaultParameterMessage, ParameterMessage};
+use serde_derive::Serialize;
 use std::collections::HashMap;
 use std::io::{self, Read};
 use subscription_message::SubscriptionMessage;
@@ -39,7 +40,7 @@ pub enum ULogType {
 }
 
 // Define the possible C types that can appear in info messages
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 /// The possible C types that can appear in info messages.
 /// This enum represents the different data types that can be used in ULog messages.
 pub enum ULogValueType {
@@ -57,7 +58,7 @@ pub enum ULogValueType {
     Char,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 /// An enum representing the different data types that can be used in ULog messages.
 /// This enum provides variants for various primitive types as well as arrays and nested message types.
 pub enum ULogValue {

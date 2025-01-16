@@ -1,17 +1,18 @@
 use std::io::Read;
 
 use byteorder::{LittleEndian, ReadBytesExt};
+use serde_derive::Serialize;
 
 use crate::{MessageHeader, ULogError, ULogParser};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct DropoutMessage {
     pub timestamp: u64,
     pub duration: u16, // Duration of dropout in milliseconds
 }
 
 // Collection of dropouts that occurred during logging
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct DropoutStats {
     pub total_drops: usize,
     pub total_duration_ms: u32,
