@@ -2,8 +2,9 @@ use std::{collections::HashMap, io::Read};
 
 use crate::{MessageHeader, ULogError, ULogParser};
 use byteorder::{LittleEndian, ReadBytesExt};
+use serde_derive::Serialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TaggedLoggedMessage {
     pub log_level: u8,
     pub tag: u16,

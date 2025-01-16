@@ -1,8 +1,10 @@
 use std::{collections::HashMap, io::Read};
 
+use serde_derive::Serialize;
+
 use crate::{Field, MessageHeader, ULogError, ULogParser};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct FormatMessage {
     pub name: String,
     pub fields: Vec<Field>,

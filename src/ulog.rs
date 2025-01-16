@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::io::Read;
 
+use serde_derive::Serialize;
+
 use crate::{
     dropout_message::DropoutStats,
     format_message::FormatMessage,
@@ -14,7 +16,7 @@ use crate::{
 };
 
 /// A structured representation of a fully parsed ULog file.
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct ULog {
     // Metadata
     pub timestamp_start: u64,

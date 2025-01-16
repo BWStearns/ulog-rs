@@ -1,11 +1,12 @@
 use std::{collections::HashMap, io::Read};
 
 use byteorder::{LittleEndian, ReadBytesExt};
+use serde_derive::Serialize;
 
 use crate::{format_message::FormatMessage, MessageHeader, ULogError, ULogParser, ULogValue};
 
 // Subscription message
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct SubscriptionMessage {
     pub multi_id: u8,
     pub msg_id: u16,
